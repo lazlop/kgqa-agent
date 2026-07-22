@@ -1,0 +1,210 @@
+================================================================================
+AGGREGATE PERFORMANCE METRICS REPORT
+================================================================================
+
+Total Queries Analyzed: 188
+
+================================================================================
+OVERALL TOKEN USAGE
+================================================================================
+
+Prompt Tokens:
+  Mean:     4,308.38
+  Median:   2,834.00
+  Min:      1,385
+  Max:      71,944
+  Std Dev:  6,127.62
+  Total:    809,975
+
+Completion Tokens:
+  Mean:     946.31
+  Median:   909.00
+  Min:      514
+  Max:      2,680
+  Std Dev:  274.04
+  Total:    177,906
+
+Total Tokens:
+  Mean:     5,254.69
+  Median:   3,602.50
+  Min:      1,899
+  Max:      74,624
+  Std Dev:  6,321.66
+  Total:    987,881
+
+================================================================================
+OVERALL F1 SCORES
+================================================================================
+
+Arity Matching F1:
+  Mean:     0.7737
+  Median:   0.8000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.2598
+
+Exact Match F1:
+  Mean:     0.6702
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.4714
+
+Entity Set F1:
+  Mean:     0.6755
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.4694
+
+Row Matching F1:
+  Mean:     0.6755
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.4694
+
+Best Subset Column F1:
+  Mean:     0.6761
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.4687
+
+================================================================================
+METRICS BY QUERY ID
+================================================================================
+
+DFLEXLIBS_001 (6 queries):
+  Tokens - Prompt (avg): 5,694.5, Completion (avg): 1,514.7, Total (avg): 7,209.2
+  F1 Scores - Arity: 0.509, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.017
+
+DFLEXLIBS_002 (6 queries):
+  Tokens - Prompt (avg): 5,888.0, Completion (avg): 1,154.0, Total (avg): 7,042.0
+  F1 Scores - Arity: 0.827, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+DFLEXLIBS_003 (6 queries):
+  Tokens - Prompt (avg): 6,473.0, Completion (avg): 929.8, Total (avg): 7,402.8
+  F1 Scores - Arity: 0.844, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+DFLEXLIBS_004 (6 queries):
+  Tokens - Prompt (avg): 4,453.5, Completion (avg): 728.3, Total (avg): 5,181.8
+  F1 Scores - Arity: 0.667, Exact: 0.000, Entity: 0.167, Row: 0.167, Best Subset: 0.167
+
+DFLEXLIBS_005 (6 queries):
+  Tokens - Prompt (avg): 5,540.8, Completion (avg): 918.0, Total (avg): 6,458.8
+  F1 Scores - Arity: 0.594, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+DFLEXLIBS_006 (6 queries):
+  Tokens - Prompt (avg): 5,418.8, Completion (avg): 919.8, Total (avg): 6,338.7
+  F1 Scores - Arity: 0.483, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+LBNL_001 (7 queries):
+  Tokens - Prompt (avg): 3,849.6, Completion (avg): 1,099.4, Total (avg): 4,949.0
+  F1 Scores - Arity: 0.896, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_002 (7 queries):
+  Tokens - Prompt (avg): 5,729.1, Completion (avg): 1,036.6, Total (avg): 6,765.7
+  F1 Scores - Arity: 0.935, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_003 (7 queries):
+  Tokens - Prompt (avg): 4,293.1, Completion (avg): 1,115.6, Total (avg): 5,408.7
+  F1 Scores - Arity: 0.551, Exact: 0.857, Entity: 0.857, Row: 0.857, Best Subset: 0.857
+
+LBNL_004 (6 queries):
+  Tokens - Prompt (avg): 3,276.5, Completion (avg): 912.0, Total (avg): 4,188.5
+  F1 Scores - Arity: 0.713, Exact: 0.833, Entity: 0.833, Row: 0.833, Best Subset: 0.833
+
+LBNL_005 (7 queries):
+  Tokens - Prompt (avg): 1,960.6, Completion (avg): 851.3, Total (avg): 2,811.9
+  F1 Scores - Arity: 0.809, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_006 (6 queries):
+  Tokens - Prompt (avg): 2,698.5, Completion (avg): 920.7, Total (avg): 3,619.2
+  F1 Scores - Arity: 0.944, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_007 (6 queries):
+  Tokens - Prompt (avg): 2,259.5, Completion (avg): 1,130.7, Total (avg): 3,390.2
+  F1 Scores - Arity: 0.798, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_001 (9 queries):
+  Tokens - Prompt (avg): 4,445.9, Completion (avg): 697.2, Total (avg): 5,143.1
+  F1 Scores - Arity: 0.756, Exact: 0.778, Entity: 0.778, Row: 0.778, Best Subset: 0.778
+
+MORTAR_002 (9 queries):
+  Tokens - Prompt (avg): 3,876.7, Completion (avg): 887.4, Total (avg): 4,764.1
+  F1 Scores - Arity: 0.849, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_003 (8 queries):
+  Tokens - Prompt (avg): 2,419.9, Completion (avg): 751.8, Total (avg): 3,171.6
+  F1 Scores - Arity: 0.817, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+MORTAR_004 (8 queries):
+  Tokens - Prompt (avg): 3,583.9, Completion (avg): 841.6, Total (avg): 4,425.5
+  F1 Scores - Arity: 0.858, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.000
+
+MORTAR_005 (7 queries):
+  Tokens - Prompt (avg): 3,549.1, Completion (avg): 907.9, Total (avg): 4,457.0
+  F1 Scores - Arity: 0.789, Exact: 0.857, Entity: 0.857, Row: 0.857, Best Subset: 0.857
+
+MORTAR_006 (8 queries):
+  Tokens - Prompt (avg): 2,905.9, Completion (avg): 848.8, Total (avg): 3,754.6
+  F1 Scores - Arity: 0.825, Exact: 0.875, Entity: 0.875, Row: 0.875, Best Subset: 0.875
+
+MORTAR_007 (9 queries):
+  Tokens - Prompt (avg): 3,072.7, Completion (avg): 853.2, Total (avg): 3,925.9
+  F1 Scores - Arity: 0.912, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_008 (9 queries):
+  Tokens - Prompt (avg): 4,799.2, Completion (avg): 933.6, Total (avg): 5,732.8
+  F1 Scores - Arity: 0.752, Exact: 0.889, Entity: 0.889, Row: 0.889, Best Subset: 0.889
+
+MORTAR_009 (9 queries):
+  Tokens - Prompt (avg): 4,320.4, Completion (avg): 944.6, Total (avg): 5,265.0
+  F1 Scores - Arity: 0.931, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_001 (6 queries):
+  Tokens - Prompt (avg): 2,956.8, Completion (avg): 945.7, Total (avg): 3,902.5
+  F1 Scores - Arity: 0.678, Exact: 0.833, Entity: 0.833, Row: 0.833, Best Subset: 0.833
+
+TUC_002 (6 queries):
+  Tokens - Prompt (avg): 13,906.8, Completion (avg): 1,247.5, Total (avg): 15,154.3
+  F1 Scores - Arity: 0.656, Exact: 0.833, Entity: 0.833, Row: 0.833, Best Subset: 0.833
+
+TUC_003 (6 queries):
+  Tokens - Prompt (avg): 5,559.0, Completion (avg): 974.8, Total (avg): 6,533.8
+  F1 Scores - Arity: 0.889, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_004 (6 queries):
+  Tokens - Prompt (avg): 3,185.8, Completion (avg): 889.5, Total (avg): 4,075.3
+  F1 Scores - Arity: 0.596, Exact: 0.833, Entity: 0.833, Row: 0.833, Best Subset: 0.833
+
+TUC_005 (6 queries):
+  Tokens - Prompt (avg): 2,420.5, Completion (avg): 889.5, Total (avg): 3,310.0
+  F1 Scores - Arity: 0.767, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+================================================================================
+METRICS BY MODEL
+================================================================================
+
+lbl/gemma-4 (188 queries):
+  Tokens - Prompt (avg): 4,308.4, Completion (avg): 946.3, Total (avg): 5,254.7
+  F1 Scores - Arity: 0.774, Exact: 0.670, Entity: 0.676, Row: 0.676
+
+================================================================================
+METRICS BY BUILDING
+================================================================================
+
+DFLEXLIBS (36 queries):
+  F1 Scores - Arity: 0.654, Exact: 0.000, Entity: 0.028, Row: 0.028, Best Subset: 0.031
+
+LBNL (46 queries):
+  F1 Scores - Arity: 0.806, Exact: 0.957, Entity: 0.957, Row: 0.957, Best Subset: 0.957
+
+MORTAR (76 queries):
+  F1 Scores - Arity: 0.833, Exact: 0.724, Entity: 0.724, Row: 0.724, Best Subset: 0.724
+
+TUC (30 queries):
+  F1 Scores - Arity: 0.717, Exact: 0.900, Entity: 0.900, Row: 0.900, Best Subset: 0.900
+
+================================================================================

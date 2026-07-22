@@ -1,0 +1,11 @@
+{
+    "models": ["nemotron-super-3"],
+    "buildingqa-dir": "../data",
+    "bschema_dir": "../data/bschema/threshold-30",
+    "exclude-buildings": ["bldg_223p_anon.ttl, bldg_brick_anon.ttl"],
+    "api-key": "REPLACE_WITH_YOUR_API_KEY",
+    "base-url": "https://api.cborg.lbl.gov",
+    "total_tokens_limit": 200000,
+    "run-name":"nemotron-super-all-tools",
+    "toolset": "all_tools"
+}

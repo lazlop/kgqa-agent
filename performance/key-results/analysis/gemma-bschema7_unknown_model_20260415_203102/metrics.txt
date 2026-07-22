@@ -1,0 +1,210 @@
+================================================================================
+AGGREGATE PERFORMANCE METRICS REPORT
+================================================================================
+
+Total Queries Analyzed: 188
+
+================================================================================
+OVERALL TOKEN USAGE
+================================================================================
+
+Prompt Tokens:
+  Mean:     37,594.76
+  Median:   16,093.00
+  Min:      0
+  Max:      183,661
+  Std Dev:  44,642.38
+  Total:    7,067,815
+
+Completion Tokens:
+  Mean:     854.48
+  Median:   858.50
+  Min:      0
+  Max:      2,219
+  Std Dev:  453.94
+  Total:    160,643
+
+Total Tokens:
+  Mean:     40,724.71
+  Median:   16,967.00
+  Min:      7,605
+  Max:      216,873
+  Std Dev:  48,209.57
+  Total:    7,656,246
+
+================================================================================
+OVERALL F1 SCORES
+================================================================================
+
+Arity Matching F1:
+  Mean:     0.8418
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.2139
+
+Exact Match F1:
+  Mean:     0.7128
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.4537
+
+Entity Set F1:
+  Mean:     0.8825
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.3176
+
+Row Matching F1:
+  Mean:     0.8573
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.3358
+
+Best Subset Column F1:
+  Mean:     0.8873
+  Median:   1.0000
+  Min:      0.0000
+  Max:      1.0000
+  Std Dev:  0.3065
+
+================================================================================
+METRICS BY QUERY ID
+================================================================================
+
+DFLEXLIBS_001 (6 queries):
+  Tokens - Prompt (avg): 17,513.5, Completion (avg): 1,017.8, Total (avg): 18,531.3
+  F1 Scores - Arity: 0.372, Exact: 0.000, Entity: 0.000, Row: 0.000, Best Subset: 0.065
+
+DFLEXLIBS_002 (6 queries):
+  Tokens - Prompt (avg): 9,720.8, Completion (avg): 705.2, Total (avg): 10,426.0
+  F1 Scores - Arity: 0.671, Exact: 0.000, Entity: 0.486, Row: 0.222, Best Subset: 0.486
+
+DFLEXLIBS_003 (6 queries):
+  Tokens - Prompt (avg): 15,173.5, Completion (avg): 555.0, Total (avg): 15,728.5
+  F1 Scores - Arity: 0.900, Exact: 0.000, Entity: 1.000, Row: 0.611, Best Subset: 1.000
+
+DFLEXLIBS_004 (6 queries):
+  Tokens - Prompt (avg): 9,072.2, Completion (avg): 261.3, Total (avg): 9,333.5
+  F1 Scores - Arity: 0.639, Exact: 0.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+DFLEXLIBS_005 (6 queries):
+  Tokens - Prompt (avg): 8,750.2, Completion (avg): 299.0, Total (avg): 9,049.2
+  F1 Scores - Arity: 0.861, Exact: 0.667, Entity: 1.000, Row: 0.917, Best Subset: 1.000
+
+DFLEXLIBS_006 (6 queries):
+  Tokens - Prompt (avg): 11,345.5, Completion (avg): 459.0, Total (avg): 11,804.5
+  F1 Scores - Arity: 0.706, Exact: 0.333, Entity: 0.833, Row: 0.778, Best Subset: 0.833
+
+LBNL_001 (7 queries):
+  Tokens - Prompt (avg): 92,411.4, Completion (avg): 1,022.0, Total (avg): 93,433.4
+  F1 Scores - Arity: 0.932, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_002 (7 queries):
+  Tokens - Prompt (avg): 111,507.0, Completion (avg): 1,117.3, Total (avg): 112,624.3
+  F1 Scores - Arity: 0.932, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_003 (7 queries):
+  Tokens - Prompt (avg): 104,197.0, Completion (avg): 957.4, Total (avg): 136,136.3
+  F1 Scores - Arity: 0.443, Exact: 0.714, Entity: 0.714, Row: 0.714, Best Subset: 0.714
+
+LBNL_004 (6 queries):
+  Tokens - Prompt (avg): 125,878.0, Completion (avg): 1,123.7, Total (avg): 127,001.7
+  F1 Scores - Arity: 0.880, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_005 (7 queries):
+  Tokens - Prompt (avg): 99,885.9, Completion (avg): 989.9, Total (avg): 100,875.7
+  F1 Scores - Arity: 0.890, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+LBNL_006 (6 queries):
+  Tokens - Prompt (avg): 105,244.3, Completion (avg): 1,355.3, Total (avg): 141,752.2
+  F1 Scores - Arity: 0.810, Exact: 0.833, Entity: 0.833, Row: 0.833, Best Subset: 0.833
+
+LBNL_007 (6 queries):
+  Tokens - Prompt (avg): 113,348.0, Completion (avg): 1,572.8, Total (avg): 114,920.8
+  F1 Scores - Arity: 0.865, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_001 (9 queries):
+  Tokens - Prompt (avg): 23,349.8, Completion (avg): 429.3, Total (avg): 23,779.1
+  F1 Scores - Arity: 0.896, Exact: 0.667, Entity: 0.667, Row: 0.667, Best Subset: 0.667
+
+MORTAR_002 (9 queries):
+  Tokens - Prompt (avg): 18,021.6, Completion (avg): 660.0, Total (avg): 18,681.6
+  F1 Scores - Arity: 0.911, Exact: 0.889, Entity: 0.889, Row: 0.889, Best Subset: 0.889
+
+MORTAR_003 (8 queries):
+  Tokens - Prompt (avg): 8,491.0, Completion (avg): 316.0, Total (avg): 8,807.0
+  F1 Scores - Arity: 0.925, Exact: 0.125, Entity: 0.875, Row: 0.875, Best Subset: 0.938
+
+MORTAR_004 (8 queries):
+  Tokens - Prompt (avg): 7,660.4, Completion (avg): 266.1, Total (avg): 7,926.5
+  F1 Scores - Arity: 0.975, Exact: 0.250, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_005 (7 queries):
+  Tokens - Prompt (avg): 17,779.9, Completion (avg): 814.6, Total (avg): 18,594.4
+  F1 Scores - Arity: 0.944, Exact: 0.714, Entity: 0.714, Row: 0.714, Best Subset: 0.714
+
+MORTAR_006 (8 queries):
+  Tokens - Prompt (avg): 18,192.0, Completion (avg): 932.1, Total (avg): 19,124.1
+  F1 Scores - Arity: 0.950, Exact: 0.750, Entity: 0.750, Row: 0.750, Best Subset: 0.750
+
+MORTAR_007 (9 queries):
+  Tokens - Prompt (avg): 21,697.9, Completion (avg): 1,032.4, Total (avg): 22,730.3
+  F1 Scores - Arity: 0.889, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_008 (9 queries):
+  Tokens - Prompt (avg): 17,631.0, Completion (avg): 623.9, Total (avg): 18,254.9
+  F1 Scores - Arity: 0.830, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+MORTAR_009 (9 queries):
+  Tokens - Prompt (avg): 20,023.4, Completion (avg): 1,045.9, Total (avg): 21,069.3
+  F1 Scores - Arity: 0.950, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_001 (6 queries):
+  Tokens - Prompt (avg): 15,152.5, Completion (avg): 1,210.8, Total (avg): 16,363.3
+  F1 Scores - Arity: 0.862, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_002 (6 queries):
+  Tokens - Prompt (avg): 15,297.5, Completion (avg): 1,392.2, Total (avg): 16,689.7
+  F1 Scores - Arity: 0.844, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_003 (6 queries):
+  Tokens - Prompt (avg): 11,689.3, Completion (avg): 1,118.2, Total (avg): 12,807.5
+  F1 Scores - Arity: 0.933, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_004 (6 queries):
+  Tokens - Prompt (avg): 13,151.2, Completion (avg): 1,094.2, Total (avg): 14,245.3
+  F1 Scores - Arity: 0.829, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+TUC_005 (6 queries):
+  Tokens - Prompt (avg): 13,011.3, Completion (avg): 1,185.0, Total (avg): 14,196.3
+  F1 Scores - Arity: 0.862, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+================================================================================
+METRICS BY MODEL
+================================================================================
+
+lbl/gemma-4 (188 queries):
+  Tokens - Prompt (avg): 37,594.8, Completion (avg): 854.5, Total (avg): 40,724.7
+  F1 Scores - Arity: 0.842, Exact: 0.713, Entity: 0.883, Row: 0.857
+
+================================================================================
+METRICS BY BUILDING
+================================================================================
+
+DFLEXLIBS (36 queries):
+  F1 Scores - Arity: 0.691, Exact: 0.167, Entity: 0.720, Row: 0.588, Best Subset: 0.731
+
+LBNL (46 queries):
+  F1 Scores - Arity: 0.820, Exact: 0.935, Entity: 0.935, Row: 0.935, Best Subset: 0.935
+
+MORTAR (76 queries):
+  F1 Scores - Arity: 0.917, Exact: 0.724, Entity: 0.882, Row: 0.882, Best Subset: 0.888
+
+TUC (30 queries):
+  F1 Scores - Arity: 0.866, Exact: 1.000, Entity: 1.000, Row: 1.000, Best Subset: 1.000
+
+================================================================================

@@ -1,0 +1,2167 @@
+{
+  "total_queries": 188,
+  "overall": {
+    "token_usage": {
+      "prompt_tokens": {
+        "mean": 50134.79787234042,
+        "median": 38838.5,
+        "min": 0.0,
+        "max": 195628.0,
+        "std_dev": 48074.53263436268,
+        "sum": 9425342.0
+      },
+      "completion_tokens": {
+        "mean": 2123.345744680851,
+        "median": 1253.0,
+        "min": 0.0,
+        "max": 34958.0,
+        "std_dev": 3489.5671693712943,
+        "sum": 399189.0
+      },
+      "total_tokens": {
+        "mean": 75743.5,
+        "median": 49403.0,
+        "min": 0.0,
+        "max": 224350.0,
+        "std_dev": 66217.38058085131,
+        "sum": 14239778.0
+      }
+    },
+    "f1_scores": {
+      "arity_matching_f1": {
+        "mean": 0.5859675293185932,
+        "median": 0.6666666666666666,
+        "min": 0.0,
+        "max": 1.0,
+        "std_dev": 0.387236954808596,
+        "sum": 110.16189551189545
+      },
+      "exact_match_f1": {
+        "mean": 0.3776595744680851,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "std_dev": 0.48609636933654515,
+        "sum": 71.0
+      },
+      "entity_set_f1": {
+        "mean": 0.42021276595744683,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "std_dev": 0.494910954500188,
+        "sum": 79.0
+      },
+      "row_matching_f1": {
+        "mean": 0.4166666666666667,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "std_dev": 0.49311962418382727,
+        "sum": 78.33333333333334
+      },
+      "best_subset_column_f1": {
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "std_dev": 0.0,
+        "sum": 0.0
+      }
+    }
+  },
+  "by_query_id": {
+    "DFLEXLIBS_001": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 59652.833333333336,
+          "median": 36371.0,
+          "min": 0.0,
+          "max": 161677.0,
+          "std_dev": 69101.2492894786,
+          "sum": 357917.0
+        },
+        "completion_tokens": {
+          "mean": 3248.0,
+          "median": 2148.5,
+          "min": 0.0,
+          "max": 7833.0,
+          "std_dev": 3619.7336366091913,
+          "sum": 19488.0
+        },
+        "total_tokens": {
+          "mean": 132871.0,
+          "median": 148055.0,
+          "min": 12711.0,
+          "max": 215355.0,
+          "std_dev": 79802.41445219562,
+          "sum": 797226.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.22671156004489337,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.8148148148148148,
+          "std_dev": 0.36140145402330354,
+          "sum": 1.3602693602693603
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "row_matching_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "DFLEXLIBS_002": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 76043.16666666667,
+          "median": 57293.5,
+          "min": 27821.0,
+          "max": 173738.0,
+          "std_dev": 56381.15999309225,
+          "sum": 456259.0
+        },
+        "completion_tokens": {
+          "mean": 2574.0,
+          "median": 2041.5,
+          "min": 1055.0,
+          "max": 5663.0,
+          "std_dev": 1602.6887408352254,
+          "sum": 15444.0
+        },
+        "total_tokens": {
+          "mean": 78617.16666666667,
+          "median": 59697.5,
+          "min": 29761.0,
+          "max": 179401.0,
+          "std_dev": 57706.78096520951,
+          "sum": 471703.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.7845238095238095,
+          "median": 0.75,
+          "min": 0.6,
+          "max": 1.0,
+          "std_dev": 0.13366243398391114,
+          "sum": 4.707142857142857
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.16666666666666666,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 1.0
+        },
+        "row_matching_f1": {
+          "mean": 0.05555555555555556,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.33333333333333337,
+          "std_dev": 0.13608276348795434,
+          "sum": 0.33333333333333337
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "DFLEXLIBS_003": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 46092.166666666664,
+          "median": 40509.5,
+          "min": 0.0,
+          "max": 136914.0,
+          "std_dev": 48704.32186332818,
+          "sum": 276553.0
+        },
+        "completion_tokens": {
+          "mean": 766.5,
+          "median": 741.0,
+          "min": 0.0,
+          "max": 1782.0,
+          "std_dev": 608.4688159634806,
+          "sum": 4599.0
+        },
+        "total_tokens": {
+          "mean": 80494.16666666667,
+          "median": 48949.5,
+          "min": 10160.0,
+          "max": 201813.0,
+          "std_dev": 73715.31015309281,
+          "sum": 482965.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.19444444444444445,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.6666666666666666,
+          "std_dev": 0.305807976544953,
+          "sum": 1.1666666666666665
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "row_matching_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "DFLEXLIBS_004": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 30653.833333333332,
+          "median": 18563.5,
+          "min": 0.0,
+          "max": 86519.0,
+          "std_dev": 32670.45040042556,
+          "sum": 183923.0
+        },
+        "completion_tokens": {
+          "mean": 343.3333333333333,
+          "median": 287.5,
+          "min": 0.0,
+          "max": 794.0,
+          "std_dev": 263.65710054285785,
+          "sum": 2060.0
+        },
+        "total_tokens": {
+          "mean": 67820.16666666667,
+          "median": 38272.5,
+          "min": 8825.0,
+          "max": 220938.0,
+          "std_dev": 80469.44868064318,
+          "sum": 406921.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.611111111111111,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.327730693416725,
+          "sum": 3.666666666666666
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.16666666666666666,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 1.0
+        },
+        "row_matching_f1": {
+          "mean": 0.16666666666666666,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 1.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "DFLEXLIBS_005": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 38579.666666666664,
+          "median": 41019.5,
+          "min": 0.0,
+          "max": 91140.0,
+          "std_dev": 34086.54638221166,
+          "sum": 231478.0
+        },
+        "completion_tokens": {
+          "mean": 1046.6666666666667,
+          "median": 991.0,
+          "min": 0.0,
+          "max": 2137.0,
+          "std_dev": 814.7266208162506,
+          "sum": 6280.0
+        },
+        "total_tokens": {
+          "mean": 73206.83333333333,
+          "median": 52263.5,
+          "min": 4748.0,
+          "max": 201483.0,
+          "std_dev": 69118.57551025387,
+          "sum": 439241.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5833333333333333,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.32914029430219166,
+          "sum": 3.5
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "row_matching_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "DFLEXLIBS_006": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 26362.5,
+          "median": 13413.5,
+          "min": 0.0,
+          "max": 98111.0,
+          "std_dev": 36588.10714289549,
+          "sum": 158175.0
+        },
+        "completion_tokens": {
+          "mean": 1454.6666666666667,
+          "median": 932.5,
+          "min": 0.0,
+          "max": 3316.0,
+          "std_dev": 1437.2061322811933,
+          "sum": 8728.0
+        },
+        "total_tokens": {
+          "mean": 61563.666666666664,
+          "median": 23160.5,
+          "min": 4721.0,
+          "max": 202479.0,
+          "std_dev": 77398.17621537775,
+          "sum": 369382.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.2222222222222222,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.6666666666666666,
+          "std_dev": 0.34426518632954817,
+          "sum": 1.3333333333333333
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "row_matching_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_001": {
+      "count": 7,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 39355.0,
+          "median": 47390.0,
+          "min": 0.0,
+          "max": 102637.0,
+          "std_dev": 40506.202130044236,
+          "sum": 275485.0
+        },
+        "completion_tokens": {
+          "mean": 1671.7142857142858,
+          "median": 990.0,
+          "min": 0.0,
+          "max": 4261.0,
+          "std_dev": 1748.0145607980228,
+          "sum": 11702.0
+        },
+        "total_tokens": {
+          "mean": 102996.71428571429,
+          "median": 77181.0,
+          "min": 2506.0,
+          "max": 222911.0,
+          "std_dev": 84022.94862261199,
+          "sum": 720977.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5306122448979592,
+          "median": 0.8571428571428571,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4997569866199101,
+          "sum": 3.7142857142857144
+        },
+        "exact_match_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_002": {
+      "count": 7,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 38608.0,
+          "median": 33704.0,
+          "min": 16896.0,
+          "max": 66467.0,
+          "std_dev": 17530.53851616278,
+          "sum": 270256.0
+        },
+        "completion_tokens": {
+          "mean": 1743.857142857143,
+          "median": 1516.0,
+          "min": 507.0,
+          "max": 3593.0,
+          "std_dev": 1026.391158147716,
+          "sum": 12207.0
+        },
+        "total_tokens": {
+          "mean": 40351.857142857145,
+          "median": 35617.0,
+          "min": 17403.0,
+          "max": 67686.0,
+          "std_dev": 17324.622183745418,
+          "sum": 282463.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.8335600907029478,
+          "median": 0.8888888888888888,
+          "min": 0.4,
+          "max": 1.0,
+          "std_dev": 0.20460686590073202,
+          "sum": 5.834920634920635
+        },
+        "exact_match_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.42857142857142855,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_003": {
+      "count": 7,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 50279.0,
+          "median": 42159.0,
+          "min": 15622.0,
+          "max": 94951.0,
+          "std_dev": 31106.00015538267,
+          "sum": 351953.0
+        },
+        "completion_tokens": {
+          "mean": 6407.714285714285,
+          "median": 2203.0,
+          "min": 840.0,
+          "max": 18555.0,
+          "std_dev": 8143.9776054514805,
+          "sum": 44854.0
+        },
+        "total_tokens": {
+          "mean": 56686.71428571428,
+          "median": 60714.0,
+          "min": 17898.0,
+          "max": 112998.0,
+          "std_dev": 35268.06916420898,
+          "sum": 396807.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5245310245310245,
+          "median": 0.7272727272727273,
+          "min": 0.0,
+          "max": 0.8333333333333334,
+          "std_dev": 0.3838099024900676,
+          "sum": 3.671717171717172
+        },
+        "exact_match_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_004": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 39341.166666666664,
+          "median": 20952.5,
+          "min": 0.0,
+          "max": 130419.0,
+          "std_dev": 47661.01246686506,
+          "sum": 236047.0
+        },
+        "completion_tokens": {
+          "mean": 1573.0,
+          "median": 1449.5,
+          "min": 0.0,
+          "max": 3616.0,
+          "std_dev": 1302.8976936045285,
+          "sum": 9438.0
+        },
+        "total_tokens": {
+          "mean": 40914.166666666664,
+          "median": 22965.0,
+          "min": 0.0,
+          "max": 134035.0,
+          "std_dev": 48748.708887176355,
+          "sum": 245485.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5952380952380952,
+          "median": 0.7857142857142857,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.49003678884525464,
+          "sum": 3.571428571428571
+        },
+        "exact_match_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_005": {
+      "count": 7,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 91078.85714285714,
+          "median": 98929.0,
+          "min": 0.0,
+          "max": 170588.0,
+          "std_dev": 74614.24039781453,
+          "sum": 637552.0
+        },
+        "completion_tokens": {
+          "mean": 3824.4285714285716,
+          "median": 3547.0,
+          "min": 0.0,
+          "max": 11747.0,
+          "std_dev": 4167.745028075448,
+          "sum": 26771.0
+        },
+        "total_tokens": {
+          "mean": 94903.28571428571,
+          "median": 102476.0,
+          "min": 0.0,
+          "max": 175695.0,
+          "std_dev": 78055.54270243355,
+          "sum": 664323.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5458826887398316,
+          "median": 0.5714285714285714,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.40523822474196114,
+          "sum": 3.8211788211788207
+        },
+        "exact_match_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_006": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 76966.33333333333,
+          "median": 70730.5,
+          "min": 0.0,
+          "max": 167092.0,
+          "std_dev": 72659.94661343117,
+          "sum": 461798.0
+        },
+        "completion_tokens": {
+          "mean": 2316.3333333333335,
+          "median": 1897.5,
+          "min": 0.0,
+          "max": 4867.0,
+          "std_dev": 1743.2872014291468,
+          "sum": 13898.0
+        },
+        "total_tokens": {
+          "mean": 112900.33333333333,
+          "median": 127177.5,
+          "min": 4132.0,
+          "max": 201706.0,
+          "std_dev": 76081.666692224,
+          "sum": 677402.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6428571428571428,
+          "median": 0.9285714285714286,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5010193690500052,
+          "sum": 3.857142857142857
+        },
+        "exact_match_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL_007": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 75349.5,
+          "median": 57579.5,
+          "min": 17115.0,
+          "max": 183115.0,
+          "std_dev": 65587.0166077098,
+          "sum": 452097.0
+        },
+        "completion_tokens": {
+          "mean": 3880.3333333333335,
+          "median": 4563.0,
+          "min": 706.0,
+          "max": 6356.0,
+          "std_dev": 2055.5105124194006,
+          "sum": 23282.0
+        },
+        "total_tokens": {
+          "mean": 79229.83333333333,
+          "median": 62174.0,
+          "min": 17821.0,
+          "max": 189471.0,
+          "std_dev": 67339.7411590412,
+          "sum": 475379.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.7619047619047619,
+          "median": 0.8571428571428571,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.3797600388071788,
+          "sum": 4.571428571428571
+        },
+        "exact_match_f1": {
+          "mean": 0.8333333333333334,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 5.0
+        },
+        "entity_set_f1": {
+          "mean": 0.8333333333333334,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 5.0
+        },
+        "row_matching_f1": {
+          "mean": 0.8333333333333334,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.408248290463863,
+          "sum": 5.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_001": {
+      "count": 9,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 29116.777777777777,
+          "median": 22591.0,
+          "min": 13300.0,
+          "max": 51150.0,
+          "std_dev": 16688.763905527707,
+          "sum": 262051.0
+        },
+        "completion_tokens": {
+          "mean": 1157.6666666666667,
+          "median": 608.0,
+          "min": 117.0,
+          "max": 4792.0,
+          "std_dev": 1442.5323219949007,
+          "sum": 10419.0
+        },
+        "total_tokens": {
+          "mean": 30274.444444444445,
+          "median": 23280.0,
+          "min": 13590.0,
+          "max": 55942.0,
+          "std_dev": 17769.180778183832,
+          "sum": 272470.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.737037037037037,
+          "median": 0.8,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.33351846710674743,
+          "sum": 6.633333333333333
+        },
+        "exact_match_f1": {
+          "mean": 0.5555555555555556,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5270462766947299,
+          "sum": 5.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5555555555555556,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5270462766947299,
+          "sum": 5.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5555555555555556,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5270462766947299,
+          "sum": 5.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_002": {
+      "count": 9,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 40855.77777777778,
+          "median": 40250.0,
+          "min": 0.0,
+          "max": 89817.0,
+          "std_dev": 36517.36818891039,
+          "sum": 367702.0
+        },
+        "completion_tokens": {
+          "mean": 1543.3333333333333,
+          "median": 1355.0,
+          "min": 0.0,
+          "max": 5955.0,
+          "std_dev": 1844.49091892587,
+          "sum": 13890.0
+        },
+        "total_tokens": {
+          "mean": 88577.66666666667,
+          "median": 79801.0,
+          "min": 0.0,
+          "max": 213421.0,
+          "std_dev": 73565.37860977811,
+          "sum": 797199.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5227513227513227,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.417731820698021,
+          "sum": 4.704761904761905
+        },
+        "exact_match_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_003": {
+      "count": 8,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 48878.5,
+          "median": 44158.0,
+          "min": 6798.0,
+          "max": 131296.0,
+          "std_dev": 41028.823948188285,
+          "sum": 391028.0
+        },
+        "completion_tokens": {
+          "mean": 1230.125,
+          "median": 1188.0,
+          "min": 372.0,
+          "max": 2140.0,
+          "std_dev": 659.145645622314,
+          "sum": 9841.0
+        },
+        "total_tokens": {
+          "mean": 50108.625,
+          "median": 45918.5,
+          "min": 7170.0,
+          "max": 132284.0,
+          "std_dev": 41255.13563506799,
+          "sum": 400869.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.8083333333333333,
+          "median": 0.7333333333333334,
+          "min": 0.6666666666666666,
+          "max": 1.0,
+          "std_dev": 0.16499158227686112,
+          "sum": 6.466666666666667
+        },
+        "exact_match_f1": {
+          "mean": 0.125,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.3535533905932738,
+          "sum": 1.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_004": {
+      "count": 8,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 48293.625,
+          "median": 28205.0,
+          "min": 16912.0,
+          "max": 157607.0,
+          "std_dev": 48141.15919115219,
+          "sum": 386349.0
+        },
+        "completion_tokens": {
+          "mean": 1249.25,
+          "median": 1184.0,
+          "min": 320.0,
+          "max": 2703.0,
+          "std_dev": 821.8315347007386,
+          "sum": 9994.0
+        },
+        "total_tokens": {
+          "mean": 49542.875,
+          "median": 29389.0,
+          "min": 17621.0,
+          "max": 160310.0,
+          "std_dev": 48889.06324800933,
+          "sum": 396343.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.7416666666666667,
+          "median": 0.8,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.33130334251544274,
+          "sum": 5.933333333333334
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.375,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5175491695067657,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.375,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5175491695067657,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_005": {
+      "count": 7,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 79248.0,
+          "median": 56397.0,
+          "min": 0.0,
+          "max": 187615.0,
+          "std_dev": 64344.832115718506,
+          "sum": 554736.0
+        },
+        "completion_tokens": {
+          "mean": 2455.0,
+          "median": 2003.0,
+          "min": 0.0,
+          "max": 5475.0,
+          "std_dev": 1826.506683991785,
+          "sum": 17185.0
+        },
+        "total_tokens": {
+          "mean": 113451.28571428571,
+          "median": 97147.0,
+          "min": 37560.0,
+          "max": 222238.0,
+          "std_dev": 72894.41530440743,
+          "sum": 794159.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6938775510204082,
+          "median": 0.8,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.3474745762595364,
+          "sum": 4.857142857142857
+        },
+        "exact_match_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5714285714285714,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5345224838248488,
+          "sum": 4.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_006": {
+      "count": 8,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 51065.125,
+          "median": 39749.5,
+          "min": 0.0,
+          "max": 127444.0,
+          "std_dev": 50442.25218274713,
+          "sum": 408521.0
+        },
+        "completion_tokens": {
+          "mean": 3041.125,
+          "median": 1865.0,
+          "min": 0.0,
+          "max": 10888.0,
+          "std_dev": 3569.539043370006,
+          "sum": 24329.0
+        },
+        "total_tokens": {
+          "mean": 79984.25,
+          "median": 51218.0,
+          "min": 4969.0,
+          "max": 207024.0,
+          "std_dev": 70837.78497736924,
+          "sum": 639874.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6446428571428572,
+          "median": 0.8285714285714285,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4309754005954022,
+          "sum": 5.1571428571428575
+        },
+        "exact_match_f1": {
+          "mean": 0.75,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4629100498862757,
+          "sum": 6.0
+        },
+        "entity_set_f1": {
+          "mean": 0.75,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4629100498862757,
+          "sum": 6.0
+        },
+        "row_matching_f1": {
+          "mean": 0.75,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4629100498862757,
+          "sum": 6.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_007": {
+      "count": 9,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 51617.11111111111,
+          "median": 34415.0,
+          "min": 0.0,
+          "max": 195628.0,
+          "std_dev": 65364.82449193228,
+          "sum": 464554.0
+        },
+        "completion_tokens": {
+          "mean": 1392.4444444444443,
+          "median": 1199.0,
+          "min": 0.0,
+          "max": 3369.0,
+          "std_dev": 1285.572645857782,
+          "sum": 12532.0
+        },
+        "total_tokens": {
+          "mean": 102158.22222222222,
+          "median": 50983.0,
+          "min": 0.0,
+          "max": 224350.0,
+          "std_dev": 89498.14318014897,
+          "sum": 919424.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5555555555555556,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.4639803635691685,
+          "sum": 5.0
+        },
+        "exact_match_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "entity_set_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "row_matching_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_008": {
+      "count": 9,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 30794.777777777777,
+          "median": 27463.0,
+          "min": 0.0,
+          "max": 80104.0,
+          "std_dev": 23693.00044199646,
+          "sum": 277153.0
+        },
+        "completion_tokens": {
+          "mean": 902.4444444444445,
+          "median": 829.0,
+          "min": 0.0,
+          "max": 1913.0,
+          "std_dev": 539.0598554685536,
+          "sum": 8122.0
+        },
+        "total_tokens": {
+          "mean": 31697.222222222223,
+          "median": 28279.0,
+          "min": 0.0,
+          "max": 81215.0,
+          "std_dev": 24015.455928306765,
+          "sum": 285275.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5148148148148148,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.41736977713317663,
+          "sum": 4.633333333333333
+        },
+        "exact_match_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR_009": {
+      "count": 9,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 47799.666666666664,
+          "median": 57940.0,
+          "min": 0.0,
+          "max": 111389.0,
+          "std_dev": 34337.93020116384,
+          "sum": 430197.0
+        },
+        "completion_tokens": {
+          "mean": 5846.0,
+          "median": 1417.0,
+          "min": 0.0,
+          "max": 34958.0,
+          "std_dev": 11070.075880498742,
+          "sum": 52614.0
+        },
+        "total_tokens": {
+          "mean": 53645.666666666664,
+          "median": 59966.0,
+          "min": 0.0,
+          "max": 114905.0,
+          "std_dev": 31870.996929026238,
+          "sum": 482811.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6804232804232804,
+          "median": 0.8,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.40192595044324736,
+          "sum": 6.123809523809523
+        },
+        "exact_match_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "entity_set_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "row_matching_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5,
+          "sum": 6.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC_001": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 52296.833333333336,
+          "median": 52421.0,
+          "min": 0.0,
+          "max": 113074.0,
+          "std_dev": 39150.715842327416,
+          "sum": 313781.0
+        },
+        "completion_tokens": {
+          "mean": 1538.5,
+          "median": 1365.5,
+          "min": 0.0,
+          "max": 2676.0,
+          "std_dev": 1016.2823918576962,
+          "sum": 9231.0
+        },
+        "total_tokens": {
+          "mean": 90405.83333333333,
+          "median": 68816.0,
+          "min": 27654.0,
+          "max": 219423.0,
+          "std_dev": 70034.0324168662,
+          "sum": 542435.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6611111111111111,
+          "median": 0.7333333333333334,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.37736905994981546,
+          "sum": 3.966666666666667
+        },
+        "exact_match_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC_002": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 64098.5,
+          "median": 47175.0,
+          "min": 0.0,
+          "max": 129953.0,
+          "std_dev": 50754.11779846045,
+          "sum": 384591.0
+        },
+        "completion_tokens": {
+          "mean": 1154.1666666666667,
+          "median": 1025.5,
+          "min": 0.0,
+          "max": 2599.0,
+          "std_dev": 864.8508349228014,
+          "sum": 6925.0
+        },
+        "total_tokens": {
+          "mean": 99173.5,
+          "median": 88022.0,
+          "min": 40323.0,
+          "max": 203525.0,
+          "std_dev": 65136.97848611033,
+          "sum": 595041.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5841269841269842,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 0.8,
+          "std_dev": 0.29939722764984683,
+          "sum": 3.5047619047619047
+        },
+        "exact_match_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943222,
+          "sum": 4.0
+        },
+        "entity_set_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943222,
+          "sum": 4.0
+        },
+        "row_matching_f1": {
+          "mean": 0.6666666666666666,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943222,
+          "sum": 4.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC_003": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 82768.5,
+          "median": 52937.0,
+          "min": 0.0,
+          "max": 184206.0,
+          "std_dev": 81625.89512342268,
+          "sum": 496611.0
+        },
+        "completion_tokens": {
+          "mean": 2305.1666666666665,
+          "median": 1863.0,
+          "min": 0.0,
+          "max": 5291.0,
+          "std_dev": 1941.1613448311468,
+          "sum": 13831.0
+        },
+        "total_tokens": {
+          "mean": 120237.16666666667,
+          "median": 133230.0,
+          "min": 26321.0,
+          "max": 210981.0,
+          "std_dev": 84891.88865943947,
+          "sum": 721423.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.4444444444444444,
+          "median": 0.3333333333333333,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5018484351393874,
+          "sum": 2.6666666666666665
+        },
+        "exact_match_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943223,
+          "sum": 2.0
+        },
+        "entity_set_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943223,
+          "sum": 2.0
+        },
+        "row_matching_f1": {
+          "mean": 0.3333333333333333,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5163977794943223,
+          "sum": 2.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC_004": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 29471.666666666668,
+          "median": 32421.5,
+          "min": 0.0,
+          "max": 69516.0,
+          "std_dev": 27071.35836020547,
+          "sum": 176830.0
+        },
+        "completion_tokens": {
+          "mean": 1113.8333333333333,
+          "median": 1054.0,
+          "min": 0.0,
+          "max": 2669.0,
+          "std_dev": 1064.0002662906934,
+          "sum": 6683.0
+        },
+        "total_tokens": {
+          "mean": 98916.83333333333,
+          "median": 57980.5,
+          "min": 24942.0,
+          "max": 206845.0,
+          "std_dev": 83557.66971240082,
+          "sum": 593501.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.473015873015873,
+          "median": 0.6190476190476191,
+          "min": 0.0,
+          "max": 0.8,
+          "std_dev": 0.3764335160262783,
+          "sum": 2.8380952380952382
+        },
+        "exact_match_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.5477225575051661,
+          "sum": 3.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC_005": {
+      "count": 6,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 26957.5,
+          "median": 34946.0,
+          "min": 0.0,
+          "max": 50852.0,
+          "std_dev": 21849.909416288207,
+          "sum": 161745.0
+        },
+        "completion_tokens": {
+          "mean": 807.0,
+          "median": 1033.5,
+          "min": 0.0,
+          "max": 1413.0,
+          "std_dev": 648.2863564814548,
+          "sum": 4842.0
+        },
+        "total_tokens": {
+          "mean": 61446.666666666664,
+          "median": 41537.0,
+          "min": 0.0,
+          "max": 202093.0,
+          "std_dev": 71184.28287386667,
+          "sum": 368680.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.48333333333333334,
+          "median": 0.65,
+          "min": 0.0,
+          "max": 0.8,
+          "std_dev": 0.39200340134578765,
+          "sum": 2.9000000000000004
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "row_matching_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    }
+  },
+  "by_model": {
+    "nemotron-super-3": {
+      "count": 188,
+      "token_usage": {
+        "prompt_tokens": {
+          "mean": 50134.79787234042,
+          "median": 38838.5,
+          "min": 0.0,
+          "max": 195628.0,
+          "std_dev": 48074.53263436268,
+          "sum": 9425342.0
+        },
+        "completion_tokens": {
+          "mean": 2123.345744680851,
+          "median": 1253.0,
+          "min": 0.0,
+          "max": 34958.0,
+          "std_dev": 3489.5671693712943,
+          "sum": 399189.0
+        },
+        "total_tokens": {
+          "mean": 75743.5,
+          "median": 49403.0,
+          "min": 0.0,
+          "max": 224350.0,
+          "std_dev": 66217.38058085131,
+          "sum": 14239778.0
+        }
+      },
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5859675293185932,
+          "median": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.387236954808596,
+          "sum": 110.16189551189545
+        },
+        "exact_match_f1": {
+          "mean": 0.3776595744680851,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.48609636933654515,
+          "sum": 71.0
+        },
+        "entity_set_f1": {
+          "mean": 0.42021276595744683,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.494910954500188,
+          "sum": 79.0
+        },
+        "row_matching_f1": {
+          "mean": 0.4166666666666667,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 1.0,
+          "std_dev": 0.49311962418382727,
+          "sum": 78.33333333333334
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "std_dev": 0.0,
+          "sum": 0.0
+        }
+      }
+    }
+  },
+  "by_building": {
+    "DFLEXLIBS": {
+      "count": 36,
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.43705774677996884,
+          "sum": 15.734078884078878
+        },
+        "exact_match_f1": {
+          "mean": 0.0,
+          "sum": 0.0
+        },
+        "entity_set_f1": {
+          "mean": 0.05555555555555555,
+          "sum": 2.0
+        },
+        "row_matching_f1": {
+          "mean": 0.03703703703703704,
+          "sum": 1.3333333333333335
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "LBNL": {
+      "count": 46,
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.6313500509152685,
+          "sum": 29.042102342102353
+        },
+        "exact_match_f1": {
+          "mean": 0.5434782608695652,
+          "sum": 25.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5434782608695652,
+          "sum": 25.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5434782608695652,
+          "sum": 25.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "MORTAR": {
+      "count": 76,
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.651441102756892,
+          "sum": 49.5095238095238
+        },
+        "exact_match_f1": {
+          "mean": 0.4473684210526316,
+          "sum": 34.0
+        },
+        "entity_set_f1": {
+          "mean": 0.5263157894736842,
+          "sum": 40.0
+        },
+        "row_matching_f1": {
+          "mean": 0.5263157894736842,
+          "sum": 40.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "sum": 0.0
+        }
+      }
+    },
+    "TUC": {
+      "count": 30,
+      "f1_scores": {
+        "arity_matching_f1": {
+          "mean": 0.5292063492063492,
+          "sum": 15.876190476190478
+        },
+        "exact_match_f1": {
+          "mean": 0.4,
+          "sum": 12.0
+        },
+        "entity_set_f1": {
+          "mean": 0.4,
+          "sum": 12.0
+        },
+        "row_matching_f1": {
+          "mean": 0.4,
+          "sum": 12.0
+        },
+        "best_subset_column_f1": {
+          "mean": 0.0,
+          "sum": 0.0
+        }
+      }
+    }
+  }
+}
