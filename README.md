@@ -145,7 +145,3 @@ The proposed BSchema method provides strong results across each of the buildings
 ### Previous methods
 
 BSchema also beats prior published baselines by a wide margin: the [BuildingQA paper's](https://dl.acm.org/doi/abs/10.1145/3736425.3770097) best ReAct configuration reaches 0.38 row F1 at $0.08/query, and [BrickQA's](https://dl.acm.org/doi/pdf/10.1145/3744256.3812570) best configuration reaches 0.60 row F1 at $0.026/query.  BSchema exceeds both at roughly 5–10x lower cost.
-
-### Why the summary beats dynamic tool exploration
-
-Tool-usage analysis shows `get_building_summary` (the tool most similar to a BSchema summary) is the most-used and most positively-correlated tool for both models, while giving agents a *larger* toolkit (`all_tools`) can hurt performance — e.g., Gemma underuses the SPARQL validator (called on only 12/188 questions) and leans on less reliable tools instead, which is why `all_tools` underperforms even the bare `sparql_only` baseline for Gemma (0.53 vs. 0.68 row F1). BSchema sidesteps this tool-selection problem entirely by providing the necessary structural/vocabulary grounding upfront.
