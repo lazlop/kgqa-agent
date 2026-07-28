@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Any, Tuple
 from pathlib import Path
 from collections import deque
 import os
+import re
 import sys
 
 from scripts.namespaces import bind_prefixes, get_prefixes, S223, BRICK, convert_to_prefixed
@@ -31,7 +32,19 @@ graph_tools = FastMCP("t2")
 bschema_tools = FastMCP("t3")
 sparql_only = FastMCP("t4")
 sparql_no_validation = FastMCP("t5")
-TOOLSETS = {'all_tools': all_tools,'graph_tools': graph_tools,'bschema_tools': bschema_tools,'sparql_only':sparql_only, 'sparql_no_validation': sparql_no_validation}
+# Same ablation as sparql_only vs sparql_no_validation (sparql_validator vs sparql_snapshot as
+# the agent's only tool), but for the B-Schema-prompted arm: agent.py treats this and
+# bschema_tools identically for prompt construction (both get the B-Schema text), differing
+# only in which single tool is registered below.
+bschema_no_validation = FastMCP("t6")
+TOOLSETS = {
+    'all_tools': all_tools,
+    'graph_tools': graph_tools,
+    'bschema_tools': bschema_tools,
+    'sparql_only': sparql_only,
+    'sparql_no_validation': sparql_no_validation,
+    'bschema_no_validation': bschema_no_validation,
+}
 
 print("loaded mcp")
 
@@ -75,27 +88,37 @@ print('loaded_ontologies')
 
 graph = None
 parsed_graph = None
+_loaded_graph_file = None
+_loaded_parsed_graph_file = None
 def _ensure_graph_loaded():
     """Lazy load the graphs from the WITHOUT_ONTOLOGY_GRAPH_FILE / WITH_ONTOLOGY_GRAPH_FILE
     environment variables. `graph` (without ontology) is the lean instance-only graph used by
     tools that walk the graph directly (describe_entity, get_relationship_between_classes);
     `parsed_graph` (with ontology) is the full reasoned graph used for actual query execution."""
-    print("loading graph...")
     global graph
     global parsed_graph
-    if graph is None:
-        graph_file = os.getenv("WITHOUT_ONTOLOGY_GRAPH_FILE")
-        parsed_graph_file = os.getenv("WITH_ONTOLOGY_GRAPH_FILE")
-        if not graph_file:
-            # Attempt to fall back to a default test graph if the environment variable is not set
-            default_path = os.path.join(os.path.dirname(__file__), "test-building.ttl")
-            if os.path.exists(default_path):
-                graph_file = default_path
-            else:
-                raise ValueError("WITHOUT_ONTOLOGY_GRAPH_FILE environment variable not set and default test graph not found")
-        if not os.path.exists(graph_file):
-            raise FileNotFoundError(f"Graph file not found: {graph_file}")
-        
+    global _loaded_graph_file
+    global _loaded_parsed_graph_file
+
+    graph_file = os.getenv("WITHOUT_ONTOLOGY_GRAPH_FILE")
+    parsed_graph_file = os.getenv("WITH_ONTOLOGY_GRAPH_FILE")
+    if not graph_file:
+        # Attempt to fall back to a default test graph if the environment variable is not set
+        default_path = os.path.join(os.path.dirname(__file__), "test-building.ttl")
+        if os.path.exists(default_path):
+            graph_file = default_path
+        else:
+            raise ValueError("WITHOUT_ONTOLOGY_GRAPH_FILE environment variable not set and default test graph not found")
+    if not os.path.exists(graph_file):
+        raise FileNotFoundError(f"Graph file not found: {graph_file}")
+
+    # benchmark.py processes every building in one Python process, changing
+    # WITHOUT_ONTOLOGY_GRAPH_FILE/WITH_ONTOLOGY_GRAPH_FILE per building. The old `if graph is
+    # None` guard only ever loaded once per process, so every building after the first silently
+    # kept running (both the agent's own tool calls and ground-truth scoring) against the first
+    # building's graph. Reload whenever the target paths differ from what's cached instead.
+    if graph is None or graph_file != _loaded_graph_file or parsed_graph_file != _loaded_parsed_graph_file:
+        print("loading graph...")
         graph = Graph(store='Oxigraph')
         graph.parse(graph_file)
         bind_prefixes(graph)
@@ -109,6 +132,9 @@ def _ensure_graph_loaded():
         # ever having to call load_dataset itself.
         _relax_load_dataset(name=RELAX_DATASET_NAME, path=parsed_graph_file, format="turtle")
         print(f"✅ Registered '{RELAX_DATASET_NAME}' with sparql-relax")
+
+        _loaded_graph_file = graph_file
+        _loaded_parsed_graph_file = parsed_graph_file
     return graph, parsed_graph
 
 def _format_term(term, graph=None) -> Dict[str, Any]:
@@ -569,6 +595,7 @@ def _relax_rows_to_bindings(rows: List[Dict[str, Any]], graph_for_prefixes) -> L
 
 
 @sparql_no_validation.tool()
+@bschema_no_validation.tool()
 def sparql_snapshot(query: str) -> Dict[str, Any]:
     """
     Retrieves the top 10 results of a SPARQL query, with no diagnosis of why a query
@@ -629,6 +656,38 @@ def sparql_snapshot(query: str) -> Dict[str, Any]:
         }
 
 
+_URI_IN_TEXT_RE = re.compile(r'<([^<>\s]+)>')
+
+
+def _prefix_uris_in_text(text: str, g) -> str:
+    """Replace every full `<...>` URI embedded in a text string with its prefixed curie
+    (e.g. `<https://brickschema.org/schema/Brick#Zone>` -> `brick:Zone`), leaving SPARQL
+    variables (?x) and everything else untouched.
+
+    Unlike every other tool in this file, sparql-relax's diagnose() returns culprit
+    triples/filter expressions with full expanded URIs rather than prefixed ones, and since
+    the whole message history gets resent to the model on every later turn, an unprefixed
+    diagnosis keeps costing tokens on every subsequent turn too -- worth compressing at the
+    source. convert_to_prefixed() can't be reused directly here since it expects one bare
+    URI, not a string mixing variables and multiple `<...>` terms.
+    """
+    def repl(match: "re.Match[str]") -> str:
+        uri = match.group(1)
+        try:
+            # generate=False: only shorten URIs whose namespace is already bound (from the
+            # source TTL's own @prefix header). Left generate=True, rdflib silently mints a
+            # new ns1:/ns2:/... prefix (and binds it into the graph, mutating shared state)
+            # for anything outside that set -- which the model was never told the meaning
+            # of, so it reads as a *more* confusing curie than the plain bracketed URI it
+            # would otherwise fall back to below.
+            prefix, _, local = g.compute_qname(uri, generate=False)
+            return f"{prefix}:{local}"
+        except Exception:
+            return match.group(0)  # leave "<uri>" as-is if it can't be shortened
+
+    return _URI_IN_TEXT_RE.sub(repl, text)
+
+
 @sparql_only.tool()
 @graph_tools.tool()
 @all_tools.tool()
@@ -667,8 +726,27 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
 
         report = _relax_diagnose(dataset=RELAX_DATASET_NAME, query=full_query, relax=relax)
 
+        def _format_culprit(culprit: Dict[str, Any]) -> str:
+            triples_text = " AND ".join(
+                _prefix_uris_in_text(t["triple"], parsed_graph) for t in culprit["triples"]
+            )
+            fix_note = ""
+            if culprit.get("relaxed_query"):
+                fix_note = f" -- fix found ({culprit['row_count_with_fix']} rows; relax=true to see it)"
+            return f"  - {triples_text}{fix_note}"
+
         # ── success path ────────────────────────────────────────────────────
-        if report["ok"]:
+        # sparql-relax's own `ok` flag is stricter than "does this query already work": it
+        # also goes false whenever removing some filter would return *more* rows, even though
+        # the query as submitted already returns real, correct results (row_count > 0).
+        # Observed in practice: FILTER(regex(str(?p), "ifc", "i")) correctly narrowed a
+        # predicate scan down to the 2 real ifc-related predicates, but got reported as
+        # "broken" solely because dropping the filter returns 15 rows instead of 2 -- so the
+        # model discarded a working, correct query and burned its remaining tool-call budget
+        # re-exploring from scratch. row_count > 0 is the real success signal; treat any
+        # filter/culprit noise sparql-relax also found as an informational note, not a
+        # rejection.
+        if report["row_count"] > 0:
             try:
                 q_result = _relax_query(dataset=RELAX_DATASET_NAME, query=full_query, row_limit=5)
                 bindings = _relax_rows_to_bindings(q_result.get("rows", []), parsed_graph)
@@ -676,6 +754,13 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
             except Exception:
                 bindings, variables = [], []
             summary = f"Query executed successfully. Found {report['row_count']} results."
+            if report["filter_issues"]:
+                notes = "; ".join(
+                    f"FILTER({_prefix_uris_in_text(f['expression'], parsed_graph)}) narrows "
+                    f"results (would return {f['row_count_without_filter']} rows without it)"
+                    for f in report["filter_issues"]
+                )
+                summary += f"\nNote (informational, not an error): {notes}"
             print(f"   -> {summary}")
             return {
                 "summary_string": summary,
@@ -688,22 +773,35 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
 
         # ── failure path: translate sparql-relax's diagnosis into a readable summary ──
         print("   -> Query is broken; see diagnosis")
+
+        # `depth` (from sparql-relax) is the size of the smallest combination whose *joint*
+        # removal unblocked the query. depth==1 means that one triple is broken independent of
+        # everything else -- high confidence, fix it. depth>1 means none of those triples was
+        # individually flagged; only removing all of them together helped, so any single one of
+        # them may well be fine on its own (e.g. a class membership triple already confirmed
+        # valid elsewhere in the conversation). Keeping these separate, and labeled accordingly,
+        # stops the model from re-doubting triples it already proved work.
+        single_culprits = [c for c in report["culprits"] if c["depth"] == 1]
+        joint_culprits = [c for c in report["culprits"] if c["depth"] > 1]
+
         lines = []
-        for i, culprit in enumerate(report["culprits"], 1):
-            triples_text = " AND ".join(t["triple"] for t in culprit["triples"])
-            fix_note = ""
-            if culprit.get("relaxed_query"):
-                fix_note = (
-                    f" -- possible fix found (would return {culprit['row_count_with_fix']} row(s)); "
-                    "call again with relax=true to see it"
-                )
-            lines.append(f"  {i}. {triples_text}{fix_note}")
-        for j, f in enumerate(report["filter_issues"], len(report["culprits"]) + 1):
-            lines.append(f"  {j}. FILTER({f['expression']}) -- removing it returns {f['row_count_without_filter']} row(s)")
+        if single_culprits:
+            lines.append("Broken on its own:")
+            lines.extend(_format_culprit(c) for c in single_culprits)
+        if joint_culprits:
+            lines.append("Broken only together (individually may be fine):")
+            lines.extend(_format_culprit(c) for c in joint_culprits)
+        if report["filter_issues"]:
+            lines.append("Broken filters:")
+            lines.extend(
+                f"  - FILTER({_prefix_uris_in_text(f['expression'], parsed_graph)}) "
+                f"-- removing it returns {f['row_count_without_filter']} rows"
+                for f in report["filter_issues"]
+            )
 
         summary = report["message"]
         if lines:
-            summary += "\n\nBroken triple patterns / filters:\n" + "\n".join(lines)
+            summary += "\n\n" + "\n".join(lines)
 
         return {
             "summary_string": summary,

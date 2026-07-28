@@ -15,13 +15,13 @@ from typing import Any, Dict, List, Optional
 from jsonschema import ValidationError
 import yaml
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent, capture_run_messages
+from pydantic_ai import Agent, ModelRetry, RunContext, capture_run_messages
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import UsageLimits, UsageLimitExceeded
 from pydantic_ai.mcp import MCPToolset
 from pydantic_ai.retries import AsyncTenacityTransport, RetryConfig, wait_retry_after
-from httpx import AsyncClient, HTTPStatusError
+from httpx import AsyncClient, HTTPStatusError, TransportError
 from tenacity import retry_if_exception_type, stop_after_attempt, wait_exponential
 
 
@@ -48,14 +48,28 @@ def create_retrying_client():
     """Create a client with smart retry handling for multiple error types."""
 
     def should_retry_status(response):
-        """Raise exceptions for retryable HTTP status codes."""
-        if response.status_code in (429, 502, 503, 504):
+        """Raise exceptions for retryable HTTP status codes.
+
+        500 is included alongside the usual 429/502/503/504: this gateway (litellm, fronting
+        cborg.lbl.gov) returns a generic 500 -- not 502/503/504 -- when the backend vllm host
+        it's routing to is unreachable (seen directly in practice: "Cannot connect to host
+        vllm-h100-4x-1:8000 ... Connect call failed"). That's exactly the kind of transient,
+        worth-retrying failure this function exists to catch, so excluding 500 defeats the
+        purpose for this particular API.
+        """
+        if response.status_code in (429, 500, 502, 503, 504):
             response.raise_for_status()  # This will raise HTTPStatusError
 
     transport = AsyncTenacityTransport(
         config=RetryConfig(
-            # Retry on HTTP errors and connection issues
-            retry=retry_if_exception_type((HTTPStatusError, ConnectionError)),
+            # Retry on HTTP errors and connection issues. TransportError (not the builtin
+            # ConnectionError, which httpx never actually raises) is what httpx raises for a
+            # failed TCP connection -- ConnectError, ReadTimeout, PoolTimeout, etc. are all
+            # subclasses of it. The openai SDK wraps these in its own APIConnectionError
+            # before this transport sees them, but the retry hook here operates at the httpx
+            # layer (below that wrapping), so TransportError is the type that's actually
+            # raised at the point tenacity intercepts it.
+            retry=retry_if_exception_type((HTTPStatusError, TransportError)),
             # Smart waiting: respects Retry-After headers, falls back to exponential backoff
             wait=wait_retry_after(
                 fallback_strategy=wait_exponential(multiplier=1, max=60),
@@ -74,6 +88,11 @@ def create_retrying_client():
 class SparqlQuery(BaseModel):
     """Model for the agent's output."""
     sparql_query: str = Field(..., description="The generated SPARQL query.")
+
+
+def _normalize_sparql_text(query: str) -> str:
+    """Collapse whitespace so two queries that differ only in formatting compare equal."""
+    return " ".join(query.split())
 
 
 class SimpleSparqlAgentMCP:
@@ -178,7 +197,28 @@ class SimpleSparqlAgentMCP:
 
         self.limits = UsageLimits(total_tokens_limit = self.total_tokens_limit, request_limit = self.max_tool_calls)
 
-        if self.toolset_name == 'bschema_tools':
+        # sparql_no_validation and bschema_no_validation's only tool is sparql_snapshot (no
+        # diagnosis, nothing to enforce against); every other toolset carries sparql_validator,
+        # and its final answer must be the exact text last run through it (enforced below via
+        # output_validator).
+        NO_VALIDATION_TOOLSETS = ('sparql_no_validation', 'bschema_no_validation')
+        BSCHEMA_TOOLSETS = ('bschema_tools', 'bschema_no_validation')
+        self.is_bschema_variant = self.toolset_name in BSCHEMA_TOOLSETS
+        self.enforce_final_validation = self.toolset_name not in NO_VALIDATION_TOOLSETS
+        self.validator_tool_name = 'sparql_validator' if self.enforce_final_validation else 'sparql_snapshot'
+        final_check_rule = (
+            f"4. Final check: Before returning your answer, call {self.validator_tool_name} on the "
+            f"exact, complete query you are about to submit — not just the schema fragments you used "
+            f"to build it up. "
+            + (
+                f"A final answer that was never run through {self.validator_tool_name} in this exact "
+                f"form will be rejected and you will be asked to validate it.\n\n"
+                if self.enforce_final_validation
+                else "\n\n"
+            )
+        )
+
+        if self.is_bschema_variant:
             system_prompt = (
                 f"You are an expert SPARQL developer specializing in Brick Schema and ASHRAE 223p.\n"
                 f"Generate complete, validated SPARQL queries to answer user questions.\n\n"
@@ -190,13 +230,19 @@ class SimpleSparqlAgentMCP:
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
                 f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
-                f"3. Validation: Use the sparql_validator tool to test your query before finalising it\n\n"
+                f"3. {'Validation' if self.enforce_final_validation else 'Verification'}: Use the "
+                f"{self.validator_tool_name} tool to test your query before finalising it\n"
+                f"{final_check_rule}"
 
                 f"REASONING APPROACH:\n"
                 f"- Read the B-Schema carefully to identify the relevant class types and predicates\n"
                 f"- Derive the triple patterns directly from the B-Schema\n"
-                f"- Use sparql_validator to confirm the query returns results before returning it\n"
-                f"- If validation fails, adjust the query based on the validator's feedback\n"
+                f"- Use {self.validator_tool_name} to confirm the query returns results before returning it\n"
+                + (
+                    "- If validation fails, adjust the query based on the validator's feedback, then re-validate the adjusted query itself\n"
+                    if self.enforce_final_validation
+                    else "- If the query returns nothing, adjust it and check again -- this tool won't explain why it failed\n"
+                )
             )
         else:
             system_prompt = (
@@ -206,12 +252,13 @@ class SimpleSparqlAgentMCP:
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
                 f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
-                f"3. Verification: Never guess entity names or relationships - use tools to verify\n\n"
+                f"3. Verification: Never guess entity names or relationships - use tools to verify\n"
+                f"{final_check_rule}"
 
                 f"REASONING APPROACH:\n"
                 f"- Before each tool call, briefly state: (1) what you know, (2) what you need to verify to answer the user request, (3) which tool to use\n"
                 f"- Keep reasoning concise - 2-3 bullet points maximum\n"
-                f"- After gathering information, write your query directly without redundant verification\n"
+                f"- After gathering information, assemble the full query, then run that exact assembled query through {self.validator_tool_name} before returning it — validating individual pieces while exploring the schema is not the same as validating the query you submit\n"
             )
 
         self.agent = Agent(
@@ -221,6 +268,37 @@ class SimpleSparqlAgentMCP:
             system_prompt=system_prompt,
             retries=10
         )
+
+        # Enforce that the query returned as the final answer is the exact text the agent
+        # already ran through sparql_validator. Without this, the model can hand-assemble a
+        # query from separately-validated schema fragments (e.g. individually-confirmed
+        # classes and predicates) and submit the composed whole without ever testing it
+        # together -- the single largest source of zero-F1 "completed" runs in the
+        # 2026-07-22 trial (see current-run-notes.md). Only wired up when sparql_validator is
+        # actually in the active toolset; the *_no_validation toolsets have no such tool to
+        # check against.
+        if self.enforce_final_validation:
+            @self.agent.output_validator
+            def _require_validated_query(ctx: RunContext, output: SparqlQuery) -> SparqlQuery:
+                target = _normalize_sparql_text(output.sparql_query)
+                for message in ctx.messages:
+                    for part in getattr(message, 'parts', []):
+                        if type(part).__name__ != 'ToolCallPart':
+                            continue
+                        if getattr(part, 'tool_name', None) != 'sparql_validator':
+                            continue
+                        try:
+                            called_query = part.args_as_dict().get('query', '')
+                        except Exception:
+                            continue
+                        if _normalize_sparql_text(called_query) == target:
+                            return output
+                raise ModelRetry(
+                    "You haven't called sparql_validator on this exact query yet -- call "
+                    "sparql_validator with this exact query text first, then resubmit it as "
+                    "your final answer."
+                )
+
         print('✅ SimpleSparqlAgentMCP initialized successfully.')
 
     async def generate_query(
@@ -242,12 +320,20 @@ class SimpleSparqlAgentMCP:
         print(f"\n🚀 Generating query for: '{nl_question}'")
 
         self.all_previous_messages = []
+        messages = []
 
         try:
             # =========================================================================
             # EXECUTION - Generate the query in a single pass
             # =========================================================================
-            if self.toolset_name == 'bschema_tools':
+            final_step = (
+                f"3. Assemble the full query, then run that exact, complete query (not just the "
+                f"pieces you used to explore the schema) through {self.validator_tool_name} and "
+                f"confirm it returns results\n"
+                f"4. Return that exact query, the one {self.validator_tool_name} just confirmed, as "
+                f"your final answer\n\n"
+            )
+            if self.is_bschema_variant:
                 execution_prompt = (
                     f"B-Schema (structural summary of the building model. It replaces references to instances with different versions of classes."
                     f"This indicates different predicates connecting these instances to other things:\n"
@@ -256,8 +342,7 @@ class SimpleSparqlAgentMCP:
                     f"Using the B-Schema above:\n"
                     f"1. Identify the relevant class types and predicates that answer the question\n"
                     f"2. Construct a SPARQL query using those class types and predicates\n"
-                    f"3. Use sparql_validator to test the query and confirm it returns results\n"
-                    f"4. Return the final, validated SPARQL query\n\n"
+                    f"{final_step}"
                 )
             else:
                 execution_prompt = (
@@ -265,8 +350,7 @@ class SimpleSparqlAgentMCP:
                     f"Using the available tools:\n"
                     f"1. Identify the relevant class types and predicates that answer the question\n"
                     f"2. Construct a SPARQL query using those class types and predicates\n"
-                    f"3. Use sparql_validator to test the query and confirm it returns results\n"
-                    f"4. Return the final, validated SPARQL query\n\n"
+                    f"{final_step}"
                 )
 
             print(f"🔧 Executing...")
@@ -279,7 +363,7 @@ class SimpleSparqlAgentMCP:
 
                 # Track tokens
                 if hasattr(result, 'usage'):
-                    usage = result.usage()
+                    usage = result.usage
                     if usage:
                         self.prompt_tokens += usage.input_tokens
                         self.completion_tokens += usage.output_tokens
@@ -293,8 +377,6 @@ class SimpleSparqlAgentMCP:
                                 actual_tool_calls += 1
                             elif type(part).__name__ == 'ToolCallPart':
                                 actual_tool_calls += 1
-
-                self.all_previous_messages += [str(msg) for msg in messages]
 
                 if actual_tool_calls == 0:
                     print("⚠️ No tools called")
@@ -342,6 +424,12 @@ class SimpleSparqlAgentMCP:
             traceback.print_exc()
             generated_query = ""
             tool_calls_exceeded = False
+
+        finally:
+            # Capture whatever messages were recorded, even on UsageLimitExceeded
+            # or any other exception raised mid-run (messages is populated live
+            # by capture_run_messages(), not just on successful completion).
+            self.all_previous_messages += [str(msg) for msg in messages]
 
         if not generated_query:
             last_sparql_query = os.getenv('LAST_SPARQL_QUERY', '')
