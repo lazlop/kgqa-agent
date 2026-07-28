@@ -710,7 +710,7 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
     Args:
         query: SPARQL SELECT query (prefixes will be added automatically)
         relax: If True, also search the graph's real edges for a corrected version of each
-            broken triple (see 'relaxed_query' in the response). Usually it's more effective
+            broken triple (see 'connected_query' in the response). Usually it's more effective
             to leave this False and fix the query yourself based on the diagnosis.
 
     Returns:
@@ -724,14 +724,17 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
         prefixes = get_prefixes(parsed_graph)
         full_query = prefixes + "\n" + query_with_limit
 
-        report = _relax_diagnose(dataset=RELAX_DATASET_NAME, query=full_query, relax=relax)
+        # sparql-relax-mcp renamed its `relax` param to `connect` (same semantics: also search
+        # the graph's real edges for a corrected version of each broken triple). Our own tool
+        # keeps the external-facing `relax` name below for prompt/behavior stability.
+        report = _relax_diagnose(dataset=RELAX_DATASET_NAME, query=full_query, connect=relax)
 
         def _format_culprit(culprit: Dict[str, Any]) -> str:
             triples_text = " AND ".join(
                 _prefix_uris_in_text(t["triple"], parsed_graph) for t in culprit["triples"]
             )
             fix_note = ""
-            if culprit.get("relaxed_query"):
+            if culprit.get("connected_query"):
                 fix_note = f" -- fix found ({culprit['row_count_with_fix']} rows; relax=true to see it)"
             return f"  - {triples_text}{fix_note}"
 
@@ -799,7 +802,10 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
                 for f in report["filter_issues"]
             )
 
-        summary = report["message"]
+        # sparql-relax-mcp's own message text refers to its `connect` param by name; our tool
+        # keeps the external-facing name `relax` (see the docstring/signature above), so rewrite
+        # the message rather than pointing the model at a parameter this tool doesn't have.
+        summary = report["message"].replace("connect=true", "relax=true").replace("connect=True", "relax=true")
         if lines:
             summary += "\n\n" + "\n".join(lines)
 

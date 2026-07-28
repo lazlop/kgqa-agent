@@ -17,13 +17,13 @@ dependencies = [
     "sparql-relax-rs",
 ]
 
-# sparql-relax-mcp declares its own dependency on sparql-relax-rs via a `../sparql-relax-py`
-# path source (relative to its position inside the lazlop/sparql-relax monorepo), which isn't
-# reliably picked up transitively once pulled in as a git dependency here -- so both packages
-# are pinned to the same monorepo explicitly. Building sparql-relax-rs requires a Rust toolchain
-# the first time (cached by uv/maturin after that).
+# sparql-relax-mcp moved out of the lazlop/sparql-relax monorepo into its own repo
+# (lazlop/kgqa-tools) on 2026-07-27; it still declares its own git dependency on
+# sparql-relax-rs (subdirectory=sparql-relax-py in lazlop/sparql-relax), pinned to the same
+# source here too for reproducibility. Building sparql-relax-rs requires a Rust toolchain the
+# first time (cached by uv/maturin after that).
 [tool.uv.sources]
-sparql-relax-mcp = { git = "https://github.com/lazlop/sparql-relax", subdirectory = "sparql-relax-mcp" }
+sparql-relax-mcp = { git = "https://github.com/lazlop/kgqa-tools" }
 sparql-relax-rs = { git = "https://github.com/lazlop/sparql-relax", subdirectory = "sparql-relax-py" }
 
 [dependency-groups]
