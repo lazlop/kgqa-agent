@@ -64,7 +64,7 @@ for csv_file in "${CSV_FILES[@]}"; do
     echo ">>> $stem"
 
     # aggregate_metrics.py
-    echo "  [1/3] aggregate_metrics..."
+    echo "  [1/2] aggregate_metrics..."
     python3 "${SCRIPT_DIR}/aggregate_metrics.py" \
         "$csv_file" \
         --output-json "${file_out}/metrics.json" \
@@ -72,21 +72,11 @@ for csv_file in "${CSV_FILES[@]}"; do
         > /dev/null
 
     # visualize_tool_usage.py
-    echo "  [2/3] visualize_tool_usage..."
+    echo "  [2/2] visualize_tool_usage..."
     python3 "${SCRIPT_DIR}/visualize_tool_usage.py" \
         "$csv_file" \
         --output-dir "$file_out" \
         2>&1 | grep -v "^$" | sed 's/^/    /'
-
-    # visualize_question_source.py (only when a reference CSV is provided)
-    if [[ -n "$REFERENCE_CSV" ]]; then
-        echo "  [3/3] visualize_question_source..."
-        python3 "${SCRIPT_DIR}/visualize_question_source.py" \
-            "$csv_file" \
-            --reference-csv "$REFERENCE_CSV" \
-            --output-dir "$file_out" \
-            2>&1 | grep -v "^$" | sed 's/^/    /'
-    fi
 
     echo "  Done → $file_out"
 done

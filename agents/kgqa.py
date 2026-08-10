@@ -594,6 +594,25 @@ def _relax_rows_to_bindings(rows: List[Dict[str, Any]], graph_for_prefixes) -> L
     ]
 
 
+def _format_example_rows(bindings: List[Dict[str, Any]], limit: int = 2) -> str:
+    """Render up to `limit` result rows as a compact 'var=value, var=value' string per row.
+
+    A bare row count ("Found 16320 results") reads as confirmation that the query is
+    correct, when it only confirms the query executes -- the model has no way to tell an
+    over-broad join (wrong count, wrong shape) from a right one without seeing what actually
+    came back. Embedding a couple of real rows directly in the summary text (rather than
+    leaving them buried in the separate `results` field) puts that check in front of the
+    model at the moment it matters, before it finalizes the query.
+    """
+    rows_text = []
+    for row in bindings[:limit]:
+        pairs = ", ".join(
+            f"{var}={term['value'] if term else 'NULL'}" for var, term in row.items()
+        )
+        rows_text.append(f"{{{pairs}}}")
+    return " | ".join(rows_text)
+
+
 @sparql_no_validation.tool()
 @bschema_no_validation.tool()
 def sparql_snapshot(query: str) -> Dict[str, Any]:
@@ -629,7 +648,10 @@ def sparql_snapshot(query: str) -> Dict[str, Any]:
         bindings = _relax_rows_to_bindings(rows, parsed_graph)
 
         if bindings:
-            summary = f"Query executed successfully on local graph. Found {len(bindings)} results."
+            summary = (
+                f"Query executed. Found {len(bindings)} rows. Please review the sample "
+                f"results: {_format_example_rows(bindings)}"
+            )
             print(f"   -> Retrieved {len(bindings)} results.")
         else:
             summary = "The query executed successfully on the local graph but returned no results."
@@ -756,7 +778,9 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
                 variables = q_result.get("variables", [])
             except Exception:
                 bindings, variables = [], []
-            summary = f"Query executed successfully. Found {report['row_count']} results."
+            summary = f"Query executed. Found {report['row_count']} rows."
+            if bindings:
+                summary += f" Please review the sample results: {_format_example_rows(bindings)}"
             if report["filter_issues"]:
                 notes = "; ".join(
                     f"FILTER({_prefix_uris_in_text(f['expression'], parsed_graph)}) narrows "

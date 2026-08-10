@@ -15,16 +15,19 @@ dependencies = [
     "sentence-transformers>=5.2.0",
     "sparql-relax-mcp",
     "sparql-relax-rs",
+    "bschema-rs",
 ]
 
 # sparql-relax-mcp moved out of the lazlop/sparql-relax monorepo into its own repo
 # (lazlop/kgqa-tools) on 2026-07-27; it still declares its own git dependency on
 # sparql-relax-rs (subdirectory=sparql-relax-py in lazlop/sparql-relax), pinned to the same
-# source here too for reproducibility. Building sparql-relax-rs requires a Rust toolchain the
-# first time (cached by uv/maturin after that).
+# source here too for reproducibility. bschema-rs (the create-bschema-rs CLI used to
+# regenerate data/bschema/*.ttl) lives in its own repo too. Building sparql-relax-rs/bschema-rs
+# requires a Rust toolchain the first time (cached by uv/maturin after that).
 [tool.uv.sources]
 sparql-relax-mcp = { git = "https://github.com/lazlop/kgqa-tools" }
 sparql-relax-rs = { git = "https://github.com/lazlop/sparql-relax", subdirectory = "sparql-relax-py" }
+bschema-rs = { git = "https://github.com/lazlop/bschema", subdirectory = "bschema-py" }
 
 [dependency-groups]
 dev = [

@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional
 from jsonschema import ValidationError
 import yaml
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent, ModelRetry, RunContext, capture_run_messages
+from pydantic_ai import Agent, capture_run_messages
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import UsageLimits, UsageLimitExceeded
@@ -88,11 +88,6 @@ def create_retrying_client():
 class SparqlQuery(BaseModel):
     """Model for the agent's output."""
     sparql_query: str = Field(..., description="The generated SPARQL query.")
-
-
-def _normalize_sparql_text(query: str) -> str:
-    """Collapse whitespace so two queries that differ only in formatting compare equal."""
-    return " ".join(query.split())
 
 
 class SimpleSparqlAgentMCP:
@@ -198,9 +193,7 @@ class SimpleSparqlAgentMCP:
         self.limits = UsageLimits(total_tokens_limit = self.total_tokens_limit, request_limit = self.max_tool_calls)
 
         # sparql_no_validation and bschema_no_validation's only tool is sparql_snapshot (no
-        # diagnosis, nothing to enforce against); every other toolset carries sparql_validator,
-        # and its final answer must be the exact text last run through it (enforced below via
-        # output_validator).
+        # diagnosis); every other toolset carries sparql_validator instead.
         NO_VALIDATION_TOOLSETS = ('sparql_no_validation', 'bschema_no_validation')
         BSCHEMA_TOOLSETS = ('bschema_tools', 'bschema_no_validation')
         self.is_bschema_variant = self.toolset_name in BSCHEMA_TOOLSETS
@@ -209,13 +202,7 @@ class SimpleSparqlAgentMCP:
         final_check_rule = (
             f"4. Final check: Before returning your answer, call {self.validator_tool_name} on the "
             f"exact, complete query you are about to submit — not just the schema fragments you used "
-            f"to build it up. "
-            + (
-                f"A final answer that was never run through {self.validator_tool_name} in this exact "
-                f"form will be rejected and you will be asked to validate it.\n\n"
-                if self.enforce_final_validation
-                else "\n\n"
-            )
+            f"to build it up.\n\n"
         )
 
         if self.is_bschema_variant:
@@ -229,7 +216,11 @@ class SimpleSparqlAgentMCP:
 
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
+                f"2. Projections: When writing SPARQL queries return more columns rather than fewer, "
+                f"but add any extra column via OPTIONAL where possible -- a required (non-OPTIONAL) "
+                f"join added just to pick up one more column can silently change which rows match, so "
+                f"re-run {self.validator_tool_name} if you add one that way after already validating "
+                f"the query\n"
                 f"3. {'Validation' if self.enforce_final_validation else 'Verification'}: Use the "
                 f"{self.validator_tool_name} tool to test your query before finalising it\n"
                 f"{final_check_rule}"
@@ -251,7 +242,11 @@ class SimpleSparqlAgentMCP:
 
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
+                f"2. Projections: When writing SPARQL queries return more columns rather than fewer, "
+                f"but add any extra column via OPTIONAL where possible -- a required (non-OPTIONAL) "
+                f"join added just to pick up one more column can silently change which rows match, so "
+                f"re-run {self.validator_tool_name} if you add one that way after already validating "
+                f"the query\n"
                 f"3. Verification: Never guess entity names or relationships - use tools to verify\n"
                 f"{final_check_rule}"
 
@@ -268,36 +263,6 @@ class SimpleSparqlAgentMCP:
             system_prompt=system_prompt,
             retries=10
         )
-
-        # Enforce that the query returned as the final answer is the exact text the agent
-        # already ran through sparql_validator. Without this, the model can hand-assemble a
-        # query from separately-validated schema fragments (e.g. individually-confirmed
-        # classes and predicates) and submit the composed whole without ever testing it
-        # together -- the single largest source of zero-F1 "completed" runs in the
-        # 2026-07-22 trial (see current-run-notes.md). Only wired up when sparql_validator is
-        # actually in the active toolset; the *_no_validation toolsets have no such tool to
-        # check against.
-        if self.enforce_final_validation:
-            @self.agent.output_validator
-            def _require_validated_query(ctx: RunContext, output: SparqlQuery) -> SparqlQuery:
-                target = _normalize_sparql_text(output.sparql_query)
-                for message in ctx.messages:
-                    for part in getattr(message, 'parts', []):
-                        if type(part).__name__ != 'ToolCallPart':
-                            continue
-                        if getattr(part, 'tool_name', None) != 'sparql_validator':
-                            continue
-                        try:
-                            called_query = part.args_as_dict().get('query', '')
-                        except Exception:
-                            continue
-                        if _normalize_sparql_text(called_query) == target:
-                            return output
-                raise ModelRetry(
-                    "You haven't called sparql_validator on this exact query yet -- call "
-                    "sparql_validator with this exact query text first, then resubmit it as "
-                    "your final answer."
-                )
 
         print('✅ SimpleSparqlAgentMCP initialized successfully.')
 

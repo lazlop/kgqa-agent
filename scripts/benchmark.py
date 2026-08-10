@@ -34,7 +34,7 @@ def load_config(config_path: str) -> dict:
 def get_model_name_from_config(config_path: str) -> str:
     """Extract model name from config file."""
     config = load_config(config_path)
-    model_name = config.get("model", ["unknown_model"])[0]
+    model_name = config.get("models", ["unknown_model"])[0]
     # Clean up model name for use in filename (replace slashes, colons, etc.)
     model_name = model_name.replace("/", "_").replace(":", "_").replace(" ", "_")
     return model_name
