@@ -216,11 +216,7 @@ class SimpleSparqlAgentMCP:
 
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer, "
-                f"but add any extra column via OPTIONAL where possible -- a required (non-OPTIONAL) "
-                f"join added just to pick up one more column can silently change which rows match, so "
-                f"re-run {self.validator_tool_name} if you add one that way after already validating "
-                f"the query\n"
+                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
                 f"3. {'Validation' if self.enforce_final_validation else 'Verification'}: Use the "
                 f"{self.validator_tool_name} tool to test your query before finalising it\n"
                 f"{final_check_rule}"
@@ -242,11 +238,7 @@ class SimpleSparqlAgentMCP:
 
                 f"QUERY CONSTRUCTION RULES:\n"
                 f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer, "
-                f"but add any extra column via OPTIONAL where possible -- a required (non-OPTIONAL) "
-                f"join added just to pick up one more column can silently change which rows match, so "
-                f"re-run {self.validator_tool_name} if you add one that way after already validating "
-                f"the query\n"
+                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
                 f"3. Verification: Never guess entity names or relationships - use tools to verify\n"
                 f"{final_check_rule}"
 
