@@ -594,6 +594,19 @@ def _relax_rows_to_bindings(rows: List[Dict[str, Any]], graph_for_prefixes) -> L
     ]
 
 
+def _format_first_row(bindings: List[Dict[str, Any]]) -> str:
+    """Render the first result row as a compact 'var=value, var=value' string.
+
+    A bare row count ("Found 16320 results") reads as confirmation that the query is
+    correct, when it only confirms the query executes. One concrete row gives the model a
+    lightweight sanity check without bloating every success message.
+    """
+    if not bindings:
+        return ""
+    row = bindings[0]
+    return ", ".join(f"{var}={term['value'] if term else 'NULL'}" for var, term in row.items())
+
+
 @sparql_no_validation.tool()
 @bschema_no_validation.tool()
 def sparql_snapshot(query: str) -> Dict[str, Any]:
@@ -629,7 +642,10 @@ def sparql_snapshot(query: str) -> Dict[str, Any]:
         bindings = _relax_rows_to_bindings(rows, parsed_graph)
 
         if bindings:
-            summary = f"Query executed successfully on local graph. Found {len(bindings)} results."
+            summary = (
+                f"Query executed. Found {len(bindings)} rows. "
+                f"First row results: {_format_first_row(bindings)}"
+            )
             print(f"   -> Retrieved {len(bindings)} results.")
         else:
             summary = "The query executed successfully on the local graph but returned no results."
@@ -756,7 +772,9 @@ def sparql_validator(query: str, relax: bool = False) -> Dict[str, Any]:
                 variables = q_result.get("variables", [])
             except Exception:
                 bindings, variables = [], []
-            summary = f"Query executed successfully. Found {report['row_count']} results."
+            summary = f"Query executed. Found {report['row_count']} rows."
+            if bindings:
+                summary += f" First row results: {_format_first_row(bindings)}"
             if report["filter_issues"]:
                 notes = "; ".join(
                     f"FILTER({_prefix_uris_in_text(f['expression'], parsed_graph)}) narrows "
