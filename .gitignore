@@ -43,5 +43,6 @@ archive/
 results/
 *.gz
 current-run-notes.md
+worktree-status.md
 configs
 *.lock
