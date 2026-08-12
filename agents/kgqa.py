@@ -80,9 +80,13 @@ def _is_excluded_predicate(pred: URIRef) -> bool:
     pred_str = str(pred)
     return any(pred_str.startswith(ns) for ns in EXCLUDED_NAMESPACES)
 
-# ontology can be brick or 223 
-ontology_brick = Graph(store = "Oxigraph").parse("https://brickschema.org/schema/1.4/Brick.ttl")
-ontology_s223 = Graph(store = "Oxigraph").parse("https://open223.info/223p.ttl")
+# ontology can be brick or 223
+# Loaded from local copies (data/ontologies/) instead of fetching over HTTP on every
+# import -- this module gets imported fresh in every benchmark.py subprocess, so with the
+# live URLs, N concurrent runs meant N redundant fetches (and N chances of a flaky one).
+_ONTOLOGY_DIR = Path(__file__).parent.parent / "data" / "ontologies"
+ontology_brick = Graph(store = "Oxigraph").parse(str(_ONTOLOGY_DIR / "Brick.ttl"))
+ontology_s223 = Graph(store = "Oxigraph").parse(str(_ONTOLOGY_DIR / "223p.ttl"))
 ontology = ontology_brick + ontology_s223
 print('loaded_ontologies')
 
