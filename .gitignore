@@ -46,3 +46,4 @@ current-run-notes.md
 worktree-status.md
 configs
 *.lock
+logs/
