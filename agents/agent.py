@@ -214,7 +214,16 @@ class SimpleSparqlAgentMCP:
             "broad `regex()`/`FILTER(... IN (...))` match against a generic type variable. Only widen to "
             "a regex/substring/multi-type filter when the question itself is asking about a broad or "
             "unnamed category.\n"
-            "7. Use SELECT DISTINCT unless the question specifically calls for duplicate/repeated rows.\n\n"
+            "7. Use SELECT DISTINCT unless the question specifically calls for duplicate/repeated rows.\n"
+            "8. Identifying literals must bind: When a question asks for a single identifying value (a "
+            "name, ID, or reference for an entity) and the entity exposes more than one literal that "
+            "could serve as it, prefer the human-readable name over an opaque ID/GUID — unless the "
+            "question names a specific kind of value (e.g. a global/unique identifier, an endpoint "
+            "address, a database name) that only one candidate literal satisfies, in which case use "
+            "that one. This is separate from rule 5: if the question asks for multiple distinct values "
+            "(e.g. both a label and an endpoint), include a column for each rather than choosing between "
+            "them. Whichever literal you use, project it through a required triple pattern, not inside "
+            "OPTIONAL — an unbound identifier produces a row that can't match anything.\n\n"
         )
 
         if self.is_bschema_variant:

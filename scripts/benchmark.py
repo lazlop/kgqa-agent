@@ -5,11 +5,15 @@ Processes all JSON files in Benchmark_QA_pairs directory against their correspon
 
 import argparse
 import asyncio
+import csv
 import json
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
+
+# message_history/generated_sparql fields can exceed the default 131072-byte cap
+csv.field_size_limit(50_000_000)
 
 # Import agent and utilities
 sys.path.insert(0, str(Path(__file__).parent.parent))
