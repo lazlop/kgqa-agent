@@ -199,10 +199,22 @@ class SimpleSparqlAgentMCP:
         self.is_bschema_variant = self.toolset_name in BSCHEMA_TOOLSETS
         self.enforce_final_validation = self.toolset_name not in NO_VALIDATION_TOOLSETS
         self.validator_tool_name = 'sparql_validator' if self.enforce_final_validation else 'sparql_snapshot'
-        final_check_rule = (
-            f"4. Final check: Before returning your answer, call {self.validator_tool_name} on the "
-            f"exact, complete query you are about to submit — not just the schema fragments you used "
-            f"to build it up.\n\n"
+        shared_rules = (
+            "3. Reference literals: In addition to unique identifiers, return human-readable name "
+            "properties and labels. When in doubt, return more labels and IDs rather than fewer.\n"
+            "4. Qualifying conditions: If the question states a qualifying condition (e.g. a status, "
+            "category, or named subtype), that condition must appear as an explicit constraint in your "
+            "WHERE clause (a triple pattern or FILTER) — not just be implied by which columns you "
+            "selected.\n"
+            "5. Compound questions: If the question asks for multiple distinct pieces of information, "
+            "include one SELECT variable for every requested item rather than collapsing them into a "
+            "single generic (type, value) pair.\n"
+            "6. Simple paths over broad filters: Prefer the most direct, specific graph path implied by "
+            "the class names in the question (e.g. `?sp a brick:Zone_Air_Temperature_Setpoint`) over a "
+            "broad `regex()`/`FILTER(... IN (...))` match against a generic type variable. Only widen to "
+            "a regex/substring/multi-type filter when the question itself is asking about a broad or "
+            "unnamed category.\n"
+            "7. Use SELECT DISTINCT unless the question specifically calls for duplicate/repeated rows.\n\n"
         )
 
         if self.is_bschema_variant:
@@ -215,11 +227,12 @@ class SimpleSparqlAgentMCP:
                 f"detail removed. Use it to understand the graph topology and construct correct queries.\n\n"
 
                 f"QUERY CONSTRUCTION RULES:\n"
-                f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
-                f"3. {'Validation' if self.enforce_final_validation else 'Verification'}: Use the "
+                f"1. Projections: When writing SPARQL queries return more columns rather than fewer. "
+                f"When querying for data about an entity, include the entity's URI as well as any "
+                f"relevant labels for it — extra columns are safe, missing ones aren't.\n"
+                f"2. {'Validation' if self.enforce_final_validation else 'Verification'}: Use the "
                 f"{self.validator_tool_name} tool to test your query before finalising it\n"
-                f"{final_check_rule}"
+                f"{shared_rules}"
 
                 f"REASONING APPROACH:\n"
                 f"- Read the B-Schema carefully to identify the relevant class types and predicates\n"
@@ -237,10 +250,11 @@ class SimpleSparqlAgentMCP:
                 f"Generate complete, validated SPARQL queries to answer user questions.\n\n"
 
                 f"QUERY CONSTRUCTION RULES:\n"
-                f"1. Prefixes: Always define standard prefixes (brick:, rdf:, rdfs:, unit:, s223:)\n"
-                f"2. Projections: When writing SPARQL queries return more columns rather than fewer\n"
-                f"3. Verification: Never guess entity names or relationships - use tools to verify\n"
-                f"{final_check_rule}"
+                f"1. Projections: When writing SPARQL queries return more columns rather than fewer. "
+                f"When querying for data about an entity, include the entity's URI as well as any "
+                f"relevant labels for it — extra columns are safe, missing ones aren't.\n"
+                f"2. Verification: Never guess entity names or relationships - use tools to verify\n"
+                f"{shared_rules}"
 
                 f"REASONING APPROACH:\n"
                 f"- Before each tool call, briefly state: (1) what you know, (2) what you need to verify to answer the user request, (3) which tool to use\n"
