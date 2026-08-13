@@ -80,16 +80,6 @@ def _is_excluded_predicate(pred: URIRef) -> bool:
     pred_str = str(pred)
     return any(pred_str.startswith(ns) for ns in EXCLUDED_NAMESPACES)
 
-# ontology can be brick or 223
-# Loaded from local copies (data/ontologies/) instead of fetching over HTTP on every
-# import -- this module gets imported fresh in every benchmark.py subprocess, so with the
-# live URLs, N concurrent runs meant N redundant fetches (and N chances of a flaky one).
-_ONTOLOGY_DIR = Path(__file__).parent.parent / "data" / "ontologies"
-ontology_brick = Graph(store = "Oxigraph").parse(str(_ONTOLOGY_DIR / "Brick.ttl"))
-ontology_s223 = Graph(store = "Oxigraph").parse(str(_ONTOLOGY_DIR / "223p.ttl"))
-ontology = ontology_brick + ontology_s223
-print('loaded_ontologies')
-
 graph = None
 parsed_graph = None
 _loaded_graph_file = None
@@ -428,9 +418,10 @@ def find_entities_by_type(klass: str | URIRef) -> Dict[str, Any]:
     g, parsed_graph = _ensure_graph_loaded()
     class_uri = _expand_uri(klass, g)
     include_subclasses = False # may not want this all the time
-    # Check if the class exists in the ontology
-    if (class_uri, RDF.type, None) not in ontology and \
-       (class_uri, RDFS.subClassOf, None) not in ontology:
+    # Check if the class exists in the ontology (parsed_graph is the full reasoned
+    # graph -- ontology triples + inferred triples -- for this building)
+    if (class_uri, RDF.type, None) not in parsed_graph and \
+       (class_uri, RDFS.subClassOf, None) not in parsed_graph:
         return {
             "summary": f"Warning: '{klass}' may not be a valid class in the ontology.",
             "class_searched": convert_to_prefixed(klass, parsed_graph),
@@ -446,7 +437,7 @@ def find_entities_by_type(klass: str | URIRef) -> Dict[str, Any]:
         subclasses = set([class_uri])
         
         # Query for transitive subclasses
-        for subclass in ontology.transitive_subjects(RDFS.subClassOf, class_uri):
+        for subclass in parsed_graph.transitive_subjects(RDFS.subClassOf, class_uri):
             subclasses.add(subclass)
         
         # Find all entities that are instances of any of these classes

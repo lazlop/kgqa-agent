@@ -107,6 +107,7 @@ class SimpleSparqlAgentMCP:
         toolset: Optional[str] = 'mcp',
         mcp_server_script: str = "../agents/kgqa.py",
         reasoning_model: bool = False,
+        example: Optional[Dict[str, str]] = None,
     ):
         """
         Initialize the Simple SPARQL Agent with MCP support.
@@ -124,6 +125,8 @@ class SimpleSparqlAgentMCP:
             max_tool_calls: Maximum number of tool calls allowed
             config_file: Path to a JSON run config (required; see configs/ for examples)
             mcp_server_script: Name of the MCP server script
+            example: Optional one-shot worked example for this building, as
+                {'question': ..., 'sparql_query': ...}. Prepended to every execution prompt.
         """
         self.with_ontology_graph_file = with_ontology_graph_file
         self.without_ontology_graph_file = without_ontology_graph_file
@@ -134,6 +137,17 @@ class SimpleSparqlAgentMCP:
         self.total_tokens = 0
         self.messages = []
         self.total_tokens_limit = total_tokens_limit
+
+        self.example = example
+        self.example_block = ""
+        if self.example:
+            self.example_block = (
+                f"WORKED EXAMPLE (a different question on this same building, illustrating its "
+                f"schema and query conventions — the actual question below may need a different "
+                f"structure, but follow the same conventions where they apply):\n"
+                f"Question: {self.example['question']}\n"
+                f"SPARQL:\n```sparql\n{self.example['sparql_query']}\n```\n\n"
+            )
 
         if config_file:
             with open(config_file, 'r') as file:
@@ -147,6 +161,7 @@ class SimpleSparqlAgentMCP:
                 self.toolset_name = config.get('toolset', toolset)
                 self.toolset = MCPToolset(TOOLSETS.get(self.toolset_name))
                 self.bschema_dir = config.get('bschema_dir', None)
+                self.bschema_dir_overrides = config.get('bschema_dir_overrides', {})
 
                 if self.provider == 'ollama':
                     self.base_url = config.get('base-url', 'http://localhost:11434/v1')
@@ -170,8 +185,10 @@ class SimpleSparqlAgentMCP:
             self.graph = None
 
         self.bschema = ""
-        if self.bschema_dir:
-            bschema_path = Path(self.bschema_dir) / Path(self.without_ontology_graph_file).name
+        building_filename = Path(self.without_ontology_graph_file).name
+        effective_bschema_dir = self.bschema_dir_overrides.get(building_filename, self.bschema_dir)
+        if effective_bschema_dir:
+            bschema_path = Path(effective_bschema_dir) / building_filename
             if not bschema_path.exists():
                 print(f"   -> ❌ ERROR: B-Schema file not found at {bschema_path}.")
             else:
@@ -315,6 +332,7 @@ class SimpleSparqlAgentMCP:
             )
             if self.is_bschema_variant:
                 execution_prompt = (
+                    f"{self.example_block}"
                     f"B-Schema (structural summary of the building model. It replaces references to instances with different versions of classes."
                     f"This indicates different predicates connecting these instances to other things:\n"
                     f"```turtle\n{self.bschema}\n```\n\n"
@@ -326,6 +344,7 @@ class SimpleSparqlAgentMCP:
                 )
             else:
                 execution_prompt = (
+                    f"{self.example_block}"
                     f"Question: {nl_question}\n"
                     f"Using the available tools:\n"
                     f"1. Identify the relevant class types and predicates that answer the question\n"

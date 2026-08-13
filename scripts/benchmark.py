@@ -85,6 +85,29 @@ PREFIX owl: <http://www.w3.org/2001/XMLSchema#>
 """
 
 
+def _select_one_shot_example(queries_list: List[Dict]) -> Optional[Dict]:
+    """
+    Picks the exemplar group/question used as this building's one-shot worked example:
+    the building's first query group, and within it the human-written question (falling
+    back to the first question if none is marked source == 'human').
+
+    Returns a dict with query_id, question text, and sparql_query, or None if the
+    building has no query groups/questions at all.
+    """
+    if not queries_list:
+        return None
+    exemplar_group = queries_list[0]
+    questions = exemplar_group.get("questions", [])
+    if not questions:
+        return None
+    exemplar_question = next((q for q in questions if q.get("source") == "human"), questions[0])
+    return {
+        "query_id": exemplar_group.get("query_id", "unknown"),
+        "question": exemplar_question.get("text", ""),
+        "sparql_query": exemplar_group.get("sparql_query", ""),
+    }
+
+
 async def process_building_queries(
     json_data: List[Dict],
     logger: CsvLogger,
@@ -92,6 +115,8 @@ async def process_building_queries(
     without_ontology_dir: Path,
     config_file: str,
     completed_set: Optional[set] = None,
+    one_shot: bool = False,
+    one_shot_exclude_group: bool = False,
 ) -> None:
     """
     Process all queries for a single building.
@@ -104,6 +129,10 @@ async def process_building_queries(
             (eval_buildings/without-ontology/).
         config_file: Path to configuration file.
         completed_set: If provided, skip (query_id, question) pairs already in this set.
+        one_shot: If True, hold out one query group's human-written question as a worked
+            example prepended to every other question's prompt for this building.
+        one_shot_exclude_group: If True (and one_shot is True), exclude every question in
+            the exemplar's query group from scoring, not just the exemplar question itself.
     """
     if not json_data:
         print("Warning: Empty JSON data")
@@ -122,14 +151,25 @@ async def process_building_queries(
     # Load TTL graphs
     with_ontology_path, without_ontology_path = get_ttl_path(building_id, with_ontology_dir, without_ontology_dir)
 
+    queries_list = building_data.get("queries", [])
+
+    example = None
+    if one_shot:
+        example = _select_one_shot_example(queries_list)
+        if example:
+            print(f"📎 One-shot exemplar: {example['query_id']} — \"{example['question'][:80]}\"")
+            print(f"   Excluding {'entire group' if one_shot_exclude_group else 'exemplar question only'} from scoring.")
+        else:
+            print("⚠️ one_shot requested but building has no query groups/questions to draw an exemplar from.")
+
     # Initialise agent
     agent = SimpleSparqlAgentMCP(
         with_ontology_graph_file=str(with_ontology_path),
         without_ontology_graph_file=str(without_ontology_path),
         config_file=config_file,
+        example=example,
     )
 
-    queries_list = building_data.get("queries", [])
     total_questions = sum(len(q.get("questions", [])) for q in queries_list)
 
     print(f"Total query groups: {len(queries_list)}")
@@ -154,6 +194,14 @@ async def process_building_queries(
             print(f"\nQuestion {question_counter}/{total_questions} (Q{q_num}):")
             print(f"  Text: {q_text}")
             print(f"  Source: {q_source}")
+
+            if example and query_id == example["query_id"]:
+                if one_shot_exclude_group:
+                    print("  ⏭️  Skipping (whole exemplar group excluded from scoring)")
+                    continue
+                if q_text == example["question"]:
+                    print("  ⏭️  Skipping (this is the one-shot exemplar question itself)")
+                    continue
 
             if completed_set is not None and (query_id, q_text) in completed_set:
                 print("  ⏭️  Skipping (already completed)")
@@ -197,7 +245,7 @@ def load_completed_questions(csv_path: str) -> set:
     with open(csv_path, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row.get('message_history', '').strip():
+            if (row.get('message_history') or '').strip():
                 completed.add((row['query_id'], row['question']))
     print(f"Found {len(completed)} already-completed questions in {csv_path}")
     return completed
@@ -233,6 +281,8 @@ async def process_single_config(config_path: Path, results_dir: Path, resume_csv
     benchmark_dir = Path(config.get("buildingqa-dir")) / "Benchmark_QA_pairs"
     with_ontology_dir = Path(config.get("buildingqa-dir")) / "eval_buildings"
     without_ontology_dir = with_ontology_dir / "without-ontology"
+    one_shot = config.get("one_shot", False)
+    one_shot_exclude_group = config.get("one_shot_exclude_group", False)
 
     # Get model name from config
     model_name = get_model_name_from_config(str(config_path))
@@ -286,6 +336,8 @@ async def process_single_config(config_path: Path, results_dir: Path, resume_csv
                 without_ontology_dir,
                 config_file=str(config_path),
                 completed_set=completed_set,
+                one_shot=one_shot,
+                one_shot_exclude_group=one_shot_exclude_group,
             )
         except Exception as e:
             print(f"❌ Unexpected error while processing {json_path.name}: {e}")
