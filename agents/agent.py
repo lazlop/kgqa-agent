@@ -16,6 +16,8 @@ from jsonschema import ValidationError
 import yaml
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, capture_run_messages
+from pydantic_ai.capabilities.hooks import Hooks
+from pydantic_ai.messages import ModelRequest, UserPromptPart
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import UsageLimits, UsageLimitExceeded
@@ -88,6 +90,17 @@ def create_retrying_client():
 class SparqlQuery(BaseModel):
     """Model for the agent's output."""
     sparql_query: str = Field(..., description="The generated SPARQL query.")
+
+
+# Replaces the (large, static, never-changing) B-Schema block once a run has burned
+# through half its token budget -- the B-Schema is embedded once in the first user
+# message but gets re-billed in full on every subsequent turn (pydantic-ai's usage
+# tracking sums input_tokens across every turn), so for bschema-toolset runs it can
+# account for the majority of tokens spent on later turns.
+_BSCHEMA_PRUNE_PLACEHOLDER = (
+    "[B-Schema omitted here to conserve the remaining token budget -- you already "
+    "reviewed it above; continue from what you've learned so far.]"
+)
 
 
 class SimpleSparqlAgentMCP:
@@ -288,15 +301,50 @@ class SimpleSparqlAgentMCP:
                 f"- After gathering information, assemble the full query, then run that exact assembled query through {self.validator_tool_name} before returning it — validating individual pieces while exploring the schema is not the same as validating the query you submit\n"
             )
 
+        capabilities = []
+        if self.is_bschema_variant and self.bschema:
+            capabilities.append(Hooks(before_model_request=self._prune_bschema_from_history))
+
         self.agent = Agent(
             self.model,
             output_type=SparqlQuery,
             toolsets = [self.toolset],
             system_prompt=system_prompt,
-            retries=10
+            retries=10,
+            capabilities=capabilities,
         )
 
         print('✅ SimpleSparqlAgentMCP initialized successfully.')
+
+    def _prune_bschema_from_history(self, ctx, request_context):
+        """
+        Before-model-request hook (bschema toolsets only): once cumulative usage for
+        this run has crossed half of total_tokens_limit, strip the B-Schema block out
+        of the resent first user message so later turns stop re-paying for it. Runs on
+        every request past that point, but str.replace is naturally a no-op once the
+        block has already been removed, so it only edits anything on the first call
+        after crossing the threshold.
+
+        An alternative approach -- injecting a one-time warning near the budget limit
+        instead of removing content -- was tried and compared against this on LBNL (the
+        one building large enough to threaten the budget at all) and lost on both F1 and
+        near-budget rate on 3 of 4 model/shot configs, so pruning is the one attached.
+        """
+        limit = ctx.usage_limits.total_tokens_limit if ctx.usage_limits else None
+        used = ctx.usage.total_tokens if ctx.usage else 0
+        if not limit or used < limit / 2:
+            return request_context
+
+        for message in request_context.messages:
+            if not isinstance(message, ModelRequest):
+                continue
+            for part in message.parts:
+                if isinstance(part, UserPromptPart) and isinstance(part.content, str) \
+                        and self.bschema in part.content:
+                    part.content = part.content.replace(self.bschema, _BSCHEMA_PRUNE_PLACEHOLDER)
+                    print(f"✂️  Pruned B-Schema from history ({used}/{limit} tokens used)")
+
+        return request_context
 
     async def generate_query(
         self,

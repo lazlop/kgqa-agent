@@ -348,7 +348,7 @@ async def process_single_config(config_path: Path, results_dir: Path, resume_csv
 
     print("\n" + "=" * 60)
     print(f"Config {config_path.name} completed!")
-    print(f"Results logged to: {log_filename}")
+    print(f"Results logged to: {log_path.name}")
     print("=" * 60)
     
     return log_path
