@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Paper figure: 2-row all-metrics comparison.
+Paper figure: 2-row all-metrics comparison (saved as figs/f1-scores.png).
 Top row = Gemma, bottom row = Nemotron.
-Four panels per row, one per F1 metric.
-Bars are grouped by condition (All Tools / SPARQL / BSchema).
+Four panels per row: Row Matching F1, Entity Set F1, Arity Matching F1, Completion Rate.
+Bars are grouped by condition (Tool-based Method / BSchema / SPARQL Validation Only).
 """
 
 from __future__ import annotations
@@ -13,7 +13,6 @@ import statistics
 import math
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -21,42 +20,50 @@ import numpy as np
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 HERE = Path(__file__).parent
+RESULTS = HERE.parent / "results" / "paper-run-3"
 
 GEMMA_FILES = {
-    "All Tools": HERE / "gemma_all_tools_unknown_model_20260415_172220.csv",
-    "SPARQL":    HERE / "gemma-sparql_unknown_model_20260415_230150.csv",
-    "BSchema":   HERE / "gemma-bschema7_unknown_model_20260415_203102.csv",
+    "Tool-based Method":      RESULTS / "gemma-all-zeroshot.csv",
+    "BSchema":                RESULTS / "gemma-bschema7-zeroshot.csv",
+    "SPARQL Validation Only": RESULTS / "gemma-sparql-zeroshot.csv",
 }
 
 NEMOTRON_FILES = {
-    "All Tools": HERE / "nemotron-super-all-tools_unknown_model_20260511_235503.csv",
-    "SPARQL":    HERE / "nemotron-super-sparql_unknown_model_20260512_223748.csv",
-    "BSchema":   HERE / "nemotron-super-bschema7_unknown_model_20260512_114006.csv",
+    "Tool-based Method":      RESULTS / "nemotron-all-zeroshot.csv",
+    "BSchema":                RESULTS / "nemotron-bschema7-zeroshot.csv",
+    "SPARQL Validation Only": RESULTS / "nemotron-sparql-zeroshot.csv",
 }
 
 # ── Metrics ──────────────────────────────────────────────────────────────────
 F1_METRICS = [
-    "arity_matching_f1",
-    "exact_match_f1",
     "row_matching_f1",
     "entity_set_f1",
+    "arity_matching_f1",
+    "returns_results",
 ]
 METRIC_TITLES = [
-    "Arity Matching F1",
-    "Exact Match F1",
     "Row Matching F1",
     "Entity Set F1",
+    "Arity Matching F1",
+    "Completion Rate",
 ]
 
 BUILDING_ORDER = ["DFLEXLIBS", "LBNL", "MORTAR", "TUC"]
 
-# ── Colour palette (muted, colorblind-safe) ──────────────────────────────────
+# ── Colour palette (Okabe-Ito colorblind-safe, vivid, high-contrast) ────────
 CONDITION_COLORS = {
-    "All Tools": "#5B8DB8",  # steel blue
-    "BSchema":   "#6AAB7A",  # sage green
-    "SPARQL":    "#C47B6A",  # terracotta
+    "Tool-based Method":      "#0072B2",  # blue
+    "BSchema":                "#009E73",  # bluish green
+    "SPARQL Validation Only": "#D55E00",  # vermillion
 }
-CONDITION_ORDER = ["All Tools", "BSchema", "SPARQL"]
+CONDITION_ORDER = ["Tool-based Method", "BSchema", "SPARQL Validation Only"]
+
+# ── Font sizes (uniform across titles, axis text, and ticks) ────────────────
+FONT_TITLE = 19
+FONT_AXIS_LABEL = 19
+FONT_TICK = 17
+FONT_LEGEND = 17
+FONT_ROW_LABEL = 19
 
 # ── I/O helpers ──────────────────────────────────────────────────────────────
 def _load(path: Path) -> list[dict]:
@@ -66,6 +73,8 @@ def _load(path: Path) -> list[dict]:
 
 
 def _to_float(val, default=0.0) -> float:
+    if isinstance(val, str) and val.strip().lower() in ("true", "false"):
+        return 1.0 if val.strip().lower() == "true" else 0.0
     try:
         return float(val) if val and val.strip() else default
     except (ValueError, AttributeError):
@@ -74,7 +83,7 @@ def _to_float(val, default=0.0) -> float:
 
 # ── Metric computation ───────────────────────────────────────────────────────
 def building_means(data: list[dict]) -> dict[str, dict[str, tuple[float, float]]]:
-    """Return {building: {metric: (mean, ci)}} for all F1 metrics."""
+    """Return {building: {metric: (mean, ci)}} for all metrics."""
     buckets: dict[str, dict[str, list]] = defaultdict(lambda: {m: [] for m in F1_METRICS})
     for row in data:
         qid = row.get("query_id", "")
@@ -90,7 +99,7 @@ def building_means(data: list[dict]) -> dict[str, dict[str, tuple[float, float]]
             if not v_list:
                 result[building][m] = (0.0, 0.0)
                 continue
-            
+
             mean = statistics.mean(v_list)
             sem = 0.0
             if len(v_list) >= 2:
@@ -112,7 +121,6 @@ def plot_row(
     buildings: list[str],
     show_titles: bool,
     show_xlabel: bool,
-    show_legend: bool,
     show_error_bars: bool = False,
 ):
     """Fill one horizontal row of axes."""
@@ -130,12 +138,12 @@ def plot_row(
             ]
             means = [p[0] for p in data_points]
             sems = [p[1] for p in data_points]
-            
+
             # Clip upper error bars at 1.0
             lower_err = sems
             upper_err = [min(s, 1.0 - m) if m < 1.0 else 0.0 for m, s in zip(means, sems)]
             asym_err = [lower_err, upper_err]
-            
+
             offset = width * (bar_idx - n_conditions / 2 + 0.5)
             err_kwargs = dict(yerr=asym_err, capsize=3, ecolor="#666666", error_kw={"elinewidth": 1.4}) if show_error_bars else {}
             ax.bar(
@@ -144,7 +152,7 @@ def plot_row(
                 color=CONDITION_COLORS[cond],
                 edgecolor="white",
                 linewidth=0.6,
-                alpha=0.92,
+                alpha=0.96,
                 zorder=3,
             )
 
@@ -155,15 +163,15 @@ def plot_row(
                         x[i] + offset, 0.012, width,
                         color=CONDITION_COLORS[cond],
                         edgecolor="none",
-                        alpha=0.85,
+                        alpha=0.9,
                         zorder=4,
                     )
 
         ax.set_xlim(-0.55, len(buildings) - 0.45)
         ax.set_ylim(0, 1.0)
         ax.set_xticks(x)
-        ax.set_xticklabels(buildings, rotation=35, ha="right", fontsize=12)
-        ax.tick_params(axis="y", labelsize=11)
+        ax.set_xticklabels(buildings, rotation=35, ha="right", fontsize=FONT_TICK)
+        ax.tick_params(axis="y", labelsize=FONT_TICK)
         ax.grid(axis="y", alpha=0.25, zorder=0)
         ax.set_axisbelow(True)
 
@@ -171,28 +179,15 @@ def plot_row(
             ax.spines[spine].set_visible(False)
 
         if show_titles:
-            ax.set_title(title, fontsize=14, fontweight="bold", pad=8)
+            ax.set_title(title, fontsize=FONT_TITLE, fontweight="bold", pad=10)
 
         if col_idx == 0:
-            ax.set_ylabel("F1 Score", fontsize=12)
+            ax.set_ylabel("Score", fontsize=FONT_AXIS_LABEL)
         else:
             ax.set_yticklabels([])
 
         if show_xlabel:
-            ax.set_xlabel("Building", fontsize=12)
-
-    if show_legend:
-        handles = [
-            mpatches.Patch(color=CONDITION_COLORS[c], label=c)
-            for c in CONDITION_ORDER
-        ]
-        ax_row[0].legend(
-            handles=handles,
-            fontsize=11,
-            framealpha=0.9,
-            edgecolor="#cccccc",
-            loc="upper left",
-        )
+            ax.set_xlabel("Building", fontsize=FONT_AXIS_LABEL)
 
 
 def main():
@@ -220,20 +215,37 @@ def main():
     })
 
     show_error_bars = False
-    plot_row(axes[0], gemma_data,    buildings, show_titles=True,  show_xlabel=False, show_legend=False, show_error_bars=show_error_bars)
-    plot_row(axes[1], nemotron_data, buildings, show_titles=False, show_xlabel=True,  show_legend=True,  show_error_bars=show_error_bars)
+    plot_row(axes[0], gemma_data,    buildings, show_titles=True,  show_xlabel=False, show_error_bars=show_error_bars)
+    plot_row(axes[1], nemotron_data, buildings, show_titles=False, show_xlabel=True,  show_error_bars=show_error_bars)
 
     # Row labels on the left margin
-    for ax_row, label in zip(axes, ["Gemma", "Nemotron Super"]):
+    for ax_row, label in zip(axes, ["Gemma 4 31B Thinking", "Nemotron Super 3"]):
         ax_row[0].annotate(
             label,
-            xy=(-0.28, 0.5), xycoords="axes fraction",
-            fontsize=15, fontweight="bold",
+            xy=(-0.32, 0.5), xycoords="axes fraction",
+            fontsize=FONT_ROW_LABEL, fontweight="bold",
             ha="center", va="center",
             rotation=90,
         )
 
-    out = HERE / "paper_two_row_comparison.png"
+    # ── Legend, placed above the panels so it never covers bars ────────────
+    handles = [
+        mpatches.Patch(color=CONDITION_COLORS[c], label=c)
+        for c in CONDITION_ORDER
+    ]
+    fig.legend(
+        handles=handles,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.04),
+        ncol=3,
+        fontsize=FONT_LEGEND,
+        framealpha=0.9,
+        edgecolor="#cccccc",
+        handletextpad=0.6,
+        columnspacing=1.4,
+    )
+
+    out = HERE.parent / "figs" / "f1-scores.png"
     fig.savefig(out, dpi=300, bbox_inches="tight")
     print(f"Saved: {out}")
     plt.close()
