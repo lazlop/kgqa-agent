@@ -51,6 +51,37 @@ Results are appended to a timestamped CSV under `results/`. To resume a partiall
 uv run python benchmark.py --config ../configs/gemma/gemma-sparql.json --resume ../results/<...>.csv
 ```
 
+### Benchmarking an external kgqa-tools server
+
+Setting `"toolset": "kgqa_tools"` runs the agent against a
+[kgqa-tools](https://github.com/lazlop/kgqa-tools) (`sparql-relax-mcp`) server over stdio instead
+of the in-process toolsets in `agents/kgqa.py`. By default it launches the local checkout at
+`../../kgqa-tools` (relative to `scripts/`) with `uv --directory ... run`, so uncommitted changes
+there are what gets benchmarked. One server process runs per building. The harness preloads two
+datasets, hides `load_dataset`/`list_datasets` from the agent, and fills in every tool's
+`dataset` argument itself (removing it from the tool schemas the agent sees): `summarize_schema`
+always runs on the instance-only graph, and every other tool on the reasoned graph that ground
+truth is scored against. Scoring is unchanged. See `example_configs/kgqa-tools/gemma-kgqa-tools.json`:
+
+```json
+"toolset": "kgqa_tools",
+"kgqa_tools": {
+    "dir": "../../kgqa-tools",
+    "server_toolset": "extended",
+    "hidden_tools": ["load_dataset", "list_datasets"],
+    "include_instructions": true,
+    "validator_tool": "run_query",
+    "summarize_schema_args": {"similarity_threshold": 0.3}
+}
+```
+
+`server_toolset` is the server's `--toolset` (`extended` or `core`). `include_instructions`
+passes the server's own instructions through to the agent. `validator_tool` is the tool the prompt
+tells the agent to check its final query with. `summarize_schema_args` fixes `summarize_schema`
+arguments for every call (they're removed from the tool's schema so the agent can't change them);
+`summarize_schema_args_overrides` replaces them per building, keyed by filename. Set `command`/`args` to launch it
+some other way (e.g. `uvx --from git+https://github.com/lazlop/kgqa-tools sparql-relax-mcp`).
+
 Then aggregate/visualize:
 
 ```sh

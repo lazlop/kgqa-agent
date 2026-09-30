@@ -1,0 +1,27 @@
+{
+    "models": [
+        "lbl/gemma-4-thinking"
+    ],
+    "buildingqa-dir": "../data",
+    "api-key": "REPLACE_WITH_YOUR_API_KEY",
+    "base-url": "https://api.cborg.lbl.gov",
+    "total_tokens_limit": 250000,
+    "run-name": "gemma-kgqa-tools-oneshot",
+    "reasoning_model": true,
+    "one_shot": true,
+    "one_shot_exclude_group": false,
+    "toolset": "kgqa_tools",
+    "kgqa_tools": {
+        "dir": "../../kgqa-tools",
+        "server_toolset": "extended",
+        "hidden_tools": [
+            "load_dataset",
+            "list_datasets"
+        ],
+        "include_instructions": true,
+        "validator_tool": "run_query",
+        "summarize_schema_args": {
+            "similarity_threshold": 0.3
+        }
+    }
+}

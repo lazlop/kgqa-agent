@@ -177,54 +177,56 @@ async def process_building_queries(
 
     question_counter = 0
 
-    for query_group in queries_list:
-        query_id = query_group.get("query_id", "unknown")
-        ground_truth_sparql = query_group.get("sparql_query", "")
-        description = query_group.get("description", "")
+    # Starts/stops the external MCP server for kgqa_tools runs (no-op otherwise)
+    async with agent:
+        for query_group in queries_list:
+            query_id = query_group.get("query_id", "unknown")
+            ground_truth_sparql = query_group.get("sparql_query", "")
+            description = query_group.get("description", "")
 
-        print(f"\n--- Query Group: {query_id} ---")
-        print(f"Description: {description}")
+            print(f"\n--- Query Group: {query_id} ---")
+            print(f"Description: {description}")
 
-        for question_data in query_group.get("questions", []):
-            question_counter += 1
-            q_num = question_data.get("question_number", question_counter)
-            q_text = question_data.get("text", "")
-            q_source = question_data.get("source", "unknown")
+            for question_data in query_group.get("questions", []):
+                question_counter += 1
+                q_num = question_data.get("question_number", question_counter)
+                q_text = question_data.get("text", "")
+                q_source = question_data.get("source", "unknown")
 
-            print(f"\nQuestion {question_counter}/{total_questions} (Q{q_num}):")
-            print(f"  Text: {q_text}")
-            print(f"  Source: {q_source}")
+                print(f"\nQuestion {question_counter}/{total_questions} (Q{q_num}):")
+                print(f"  Text: {q_text}")
+                print(f"  Source: {q_source}")
 
-            if example and query_id == example["query_id"]:
-                if one_shot_exclude_group:
-                    print("  ⏭️  Skipping (whole exemplar group excluded from scoring)")
+                if example and query_id == example["query_id"]:
+                    if one_shot_exclude_group:
+                        print("  ⏭️  Skipping (whole exemplar group excluded from scoring)")
+                        continue
+                    if q_text == example["question"]:
+                        print("  ⏭️  Skipping (this is the one-shot exemplar question itself)")
+                        continue
+
+                if completed_set is not None and (query_id, q_text) in completed_set:
+                    print("  ⏭️  Skipping (already completed)")
                     continue
-                if q_text == example["question"]:
-                    print("  ⏭️  Skipping (this is the one-shot exemplar question itself)")
-                    continue
 
-            if completed_set is not None and (query_id, q_text) in completed_set:
-                print("  ⏭️  Skipping (already completed)")
-                continue
+                eval_data = {
+                    "query_id": query_id,
+                    "question": q_text,
+                    "ground_truth_sparql": ground_truth_sparql,
+                }
 
-            eval_data = {
-                "query_id": query_id,
-                "question": q_text,
-                "ground_truth_sparql": ground_truth_sparql,
-            }
+                try:
+                    await agent.generate_query(
+                        eval_data=eval_data,
+                        logger=logger,
+                        prefixes=STANDARD_PREFIXES,
+                    )
+                    print("  ✅ Completed")
+                except Exception as e:
+                    print(f"  ❌ Error: {str(e)}")
+                    import traceback
 
-            try:
-                await agent.generate_query(
-                    eval_data=eval_data,
-                    logger=logger,
-                    prefixes=STANDARD_PREFIXES,
-                )
-                print("  ✅ Completed")
-            except Exception as e:
-                print(f"  ❌ Error: {str(e)}")
-                import traceback
-
-                print(f"  Traceback: {traceback.format_exc()}")
+                    print(f"  Traceback: {traceback.format_exc()}")
 
 
 def load_csv_data(csv_path: str) -> List[Dict]:

@@ -5,6 +5,8 @@ Simplified SPARQL agent that uses tool calls up to a maximum limit.
 """
 from pprint import pprint
 import asyncio
+import copy
+import dataclasses
 import json
 import os
 import sys
@@ -22,6 +24,7 @@ from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import UsageLimits, UsageLimitExceeded
 from pydantic_ai.mcp import MCPToolset
+from fastmcp.client.transports import StdioTransport
 from pydantic_ai.retries import AsyncTenacityTransport, RetryConfig, wait_retry_after
 from httpx import AsyncClient, HTTPStatusError, TransportError
 from tenacity import retry_if_exception_type, stop_after_attempt, wait_exponential
@@ -103,6 +106,17 @@ _BSCHEMA_PRUNE_PLACEHOLDER = (
 )
 
 
+# toolset name that runs the agent against an external kgqa-tools (sparql-relax-mcp) server
+# over stdio instead of one of agents/kgqa.py's in-process TOOLSETS. Both building graphs are
+# preloaded before any question runs, and the harness fills in every tool's `dataset` argument
+# itself (it's removed from the tool schemas the agent sees): summarize_schema always runs on
+# the instance-only graph, so the summary isn't swamped by ontology triples, and every other
+# tool on the reasoned graph (the one ground truth is scored against).
+KGQA_TOOLS_TOOLSET = 'kgqa_tools'
+KGQA_TOOLS_QUERY_DATASET = 'building_with_ontology'
+KGQA_TOOLS_SCHEMA_DATASET = 'building_only'
+
+
 class SimpleSparqlAgentMCP:
     """
     A simplified SPARQL agent that uses MCP tools to generate queries in a single
@@ -162,6 +176,7 @@ class SimpleSparqlAgentMCP:
                 f"SPARQL:\n```sparql\n{self.example['sparql_query']}\n```\n\n"
             )
 
+        self.kgqa_tools_server = None
         if config_file:
             with open(config_file, 'r') as file:
                 config = json.load(file)
@@ -172,7 +187,11 @@ class SimpleSparqlAgentMCP:
                 self.mcp_server_script = config.get('mcp_server_script', mcp_server_script)
                 self.reasoning_model = config.get('reasoning_model', reasoning_model)
                 self.toolset_name = config.get('toolset', toolset)
-                self.toolset = MCPToolset(TOOLSETS.get(self.toolset_name))
+                if self.toolset_name == KGQA_TOOLS_TOOLSET:
+                    self.kgqa_tools_config = config.get('kgqa_tools', {})
+                    self.toolset = self._build_kgqa_tools_toolset(self.kgqa_tools_config)
+                else:
+                    self.toolset = MCPToolset(TOOLSETS.get(self.toolset_name))
                 self.bschema_dir = config.get('bschema_dir', None)
                 self.bschema_dir_overrides = config.get('bschema_dir_overrides', {})
 
@@ -229,6 +248,8 @@ class SimpleSparqlAgentMCP:
         self.is_bschema_variant = self.toolset_name in BSCHEMA_TOOLSETS
         self.enforce_final_validation = self.toolset_name not in NO_VALIDATION_TOOLSETS
         self.validator_tool_name = 'sparql_validator' if self.enforce_final_validation else 'sparql_snapshot'
+        if self.toolset_name == KGQA_TOOLS_TOOLSET:
+            self.validator_tool_name = self.kgqa_tools_config.get('validator_tool', 'run_query')
         shared_rules = (
             "3. Reference literals: In addition to unique identifiers, return human-readable name "
             "properties and labels. When in doubt, return more labels and IDs rather than fewer.\n"
@@ -315,6 +336,106 @@ class SimpleSparqlAgentMCP:
         )
 
         print('✅ SimpleSparqlAgentMCP initialized successfully.')
+
+    def _build_kgqa_tools_toolset(self, cfg: Dict[str, Any]):
+        """
+        Stdio toolset for an external kgqa-tools (sparql-relax-mcp) server, by default the
+        local checkout at cfg['dir'] run via `uv --directory <dir> run sparql-relax-mcp`, so
+        uncommitted changes there are what gets benchmarked. The server's own tool
+        descriptions and (by default) its instructions are passed through unchanged, except
+        that the harness supplies some arguments itself and removes them from the tool schemas
+        the agent sees: every tool's `dataset` (see KGQA_TOOLS_TOOLSET) and any configured
+        summarize_schema_args. The dataset-management tools in cfg['hidden_tools'] are withheld
+        entirely, since the harness loads the graphs itself (see __aenter__).
+
+        cfg keys (all optional):
+            dir: kgqa-tools checkout (default ../../kgqa-tools, relative to the cwd)
+            server_toolset: the server's --toolset, 'extended' or 'core' (default 'extended')
+            command/args: override the launch command entirely (e.g. uvx from GitHub)
+            hidden_tools: tool names withheld from the agent
+                (default ['load_dataset', 'list_datasets'])
+            include_instructions: send the server's instructions to the agent (default True)
+            validator_tool: the tool the prompt tells the agent to check its final query with
+                (default 'run_query')
+            summarize_schema_args: summarize_schema arguments fixed by the harness, e.g.
+                {"similarity_threshold": 0.3} (default {}: the agent/server defaults apply)
+            summarize_schema_args_overrides: per-building replacements for those, keyed by
+                building filename like bschema_dir_overrides, e.g.
+                {"b59.ttl": {"similarity_threshold": 0.3}}
+            init_timeout: seconds to wait for the server to start (default 120)
+        """
+        tools_dir = Path(cfg.get('dir', '../../kgqa-tools')).resolve()
+        command = cfg.get('command', 'uv')
+        args = cfg.get('args', [
+            '--directory', str(tools_dir), 'run', 'sparql-relax-mcp',
+            '--toolset', cfg.get('server_toolset', 'extended'),
+        ])
+        # `uv --directory` changes the server's cwd, so the paths must be absolute
+        self.kgqa_tools_datasets = {
+            KGQA_TOOLS_QUERY_DATASET: str(Path(self.with_ontology_graph_file).resolve()),
+            KGQA_TOOLS_SCHEMA_DATASET: str(Path(self.without_ontology_graph_file).resolve()),
+        }
+
+        print(f"🔌 kgqa-tools server: {command} {' '.join(args)}")
+        # keep_alive=False: the subprocess (and its loaded graph) lives exactly as long as
+        # this agent's `async with` block, rather than lingering after each building
+        self.kgqa_tools_server = MCPToolset(
+            StdioTransport(command=command, args=args, keep_alive=False),
+            include_instructions=cfg.get('include_instructions', True),
+            init_timeout=cfg.get('init_timeout', 120),
+        )
+        building_filename = Path(self.without_ontology_graph_file).name
+        schema_args = {
+            **cfg.get('summarize_schema_args', {}),
+            **cfg.get('summarize_schema_args_overrides', {}).get(building_filename, {}),
+        }
+        if schema_args:
+            print(f"📌 summarize_schema args fixed for {building_filename}: {schema_args}")
+
+        def pinned_args(tool_name: str) -> Dict[str, Any]:
+            if tool_name == 'summarize_schema':
+                return {'dataset': KGQA_TOOLS_SCHEMA_DATASET, **schema_args}
+            return {'dataset': KGQA_TOOLS_QUERY_DATASET}
+
+        async def pin_args(ctx, call_tool, name, args):
+            return await call_tool(name, {**args, **pinned_args(name)})
+
+        self.kgqa_tools_server.process_tool_call = pin_args
+
+        def hide_pinned_params(ctx, tool_defs):
+            prepared = []
+            for tool_def in tool_defs:
+                pinned = pinned_args(tool_def.name)
+                schema = copy.deepcopy(tool_def.parameters_json_schema)
+                for key in pinned:
+                    schema.get('properties', {}).pop(key, None)
+                if 'required' in schema:
+                    schema['required'] = [k for k in schema['required'] if k not in pinned]
+                prepared.append(dataclasses.replace(tool_def, parameters_json_schema=schema))
+            return prepared
+
+        hidden = set(cfg.get('hidden_tools', ['load_dataset', 'list_datasets']))
+        return (
+            self.kgqa_tools_server
+            .filtered(lambda ctx, tool_def: tool_def.name not in hidden)
+            .prepared(hide_pinned_params)
+        )
+
+    async def __aenter__(self):
+        """Start the kgqa-tools server (if this run uses one) and load both building graphs
+        into it. A no-op for the in-process agents/kgqa.py toolsets."""
+        if self.kgqa_tools_server is not None:
+            await self.kgqa_tools_server.__aenter__()
+            for name, path in self.kgqa_tools_datasets.items():
+                result = await self.kgqa_tools_server.direct_call_tool(
+                    'load_dataset', {'name': name, 'path': path, 'format': 'turtle'},
+                )
+                print(f"   -> ✅ Loaded '{name}' into kgqa-tools ({result['triple_count']} triples)")
+        return self
+
+    async def __aexit__(self, *exc_info):
+        if self.kgqa_tools_server is not None:
+            await self.kgqa_tools_server.__aexit__(*exc_info)
 
     def _prune_bschema_from_history(self, ctx, request_context):
         """
